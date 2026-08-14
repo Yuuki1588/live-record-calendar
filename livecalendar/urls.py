@@ -4,11 +4,15 @@ from . import views
 
 urlpatterns = [
     path(
-        '',
+        'login/',
         auth_views.LoginView.as_view(
             template_name='livecalendar/login.html'
         ),
         name='login'
     ),
+    #ホーム画面を表示するためのURL
     path('home/', views.index, name='home'),
+
+    #新規登録画面を表示するためのURL
+    path('signup/',views.signup, name='signup'),
 ]

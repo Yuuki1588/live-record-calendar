@@ -118,4 +118,5 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_REDIRECT_URL = '/login/home/'
+# ログイン成功後にライブ記録カレンダーのホーム画面へ移動する
+LOGIN_REDIRECT_URL = '/home/'
