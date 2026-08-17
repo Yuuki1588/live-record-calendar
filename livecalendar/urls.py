@@ -15,4 +15,6 @@ urlpatterns = [
 
     #新規登録画面を表示するためのURL
     path('signup/',views.signup, name='signup'),
+    #ログアウトするためのURL
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

@@ -8,6 +8,11 @@
 
     <h1>ライブ記録カレンダー</h1>
 
+    <!-- ログアウトするためのボタン -->
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">ログアウト</button>
+</form>
 
 </body>
 </html>

@@ -4,8 +4,11 @@ from django.shortcuts import render, redirect
 # 作成した新規登録フォームを使えるようにする
 from .forms import SignUpForm
 
+# ログインしているユーザーだけ画面を見られるようにする
+from django.contrib.auth.decorators import login_required
 
 # ホーム画面を表示する
+@login_required
 def index(request):
     return render(request, 'livecalendar/index.html')
 

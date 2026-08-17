@@ -120,3 +120,9 @@ STATIC_URL = 'static/'
 
 # ログイン成功後にライブ記録カレンダーのホーム画面へ移動する
 LOGIN_REDIRECT_URL = '/home/'
+
+# ログアウト成功後にログイン画面へ移動する
+LOGOUT_REDIRECT_URL = '/login/'
+
+# ログインしていない場合に移動するログイン画面を指定する
+LOGIN_URL = '/login/'
