@@ -11,13 +11,23 @@
     <!-- 登録されているライブ予定を表示する -->
     <h2>ライブ予定</h2>
 
+    
+    <!-- 登録されているライブ予定を1件ずつ表示する -->
     {% for schedule in live_schedules %}
-    <p>
-        {{ schedule.event_date }}
-        {{ schedule.event_name }}
-    </p>
+
+    <h3>{{ schedule.event_name }}</h3>
+
+    <p>日付：{{ schedule.event_date|date:"Y年n月j日" }}</p>
+    <p>アーティスト：{{ schedule.artist }}</p>
+    <p>会場：{{ schedule.venue }}</p>
+    <p>開場：{{ schedule.open_time|time:"H:i" }}</p>
+    <p>開演：{{ schedule.start_time|time:"H:i" }}</p>
+
     {% empty %}
+
+    <!-- ライブ予定が1件もない場合 -->
     <p>ライブ予定はありません。</p>
+
     {% endfor %}
 
     <!-- ログアウトするためのボタン -->
