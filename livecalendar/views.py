@@ -4,13 +4,24 @@ from django.shortcuts import render, redirect
 # 作成した新規登録フォームを使えるようにする
 from .forms import SignUpForm
 
+# ライブ予定のデータを使えるようにする
+from .models import LiveSchedule
+
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
 
 # ホーム画面を表示する
 @login_required
 def index(request):
-    return render(request, 'livecalendar/index.html')
+    # ログインしているユーザーのライブ予定を取得する
+    live_schedules = LiveSchedule.objects.filter(user=request.user)
+
+    # 取得したライブ予定をindex.htmlに渡す
+    return render(
+    request,
+    'livecalendar/index.html',
+    {'live_schedules': live_schedules}
+    )
 
 
 # 新規登録画面の処理

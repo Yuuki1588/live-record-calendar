@@ -8,11 +8,23 @@
 
     <h1>ライブ記録カレンダー</h1>
 
+    <!-- 登録されているライブ予定を表示する -->
+    <h2>ライブ予定</h2>
+
+    {% for schedule in live_schedules %}
+    <p>
+        {{ schedule.event_date }}
+        {{ schedule.event_name }}
+    </p>
+    {% empty %}
+    <p>ライブ予定はありません。</p>
+    {% endfor %}
+
     <!-- ログアウトするためのボタン -->
-<form method="post" action="{% url 'logout' %}">
+    <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
     <button type="submit">ログアウト</button>
-</form>
+    </form>
 
 </body>
 </html>
