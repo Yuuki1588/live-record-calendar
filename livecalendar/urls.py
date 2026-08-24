@@ -17,4 +17,6 @@ urlpatterns = [
     path('signup/',views.signup, name='signup'),
     #ログアウトするためのURL
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # ライブ詳細画面を表示するためのURL
+    path('live/<int:schedule_id>/', views.live_detail, name='live_detail'),
 ]

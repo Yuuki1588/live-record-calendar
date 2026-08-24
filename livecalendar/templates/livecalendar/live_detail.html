@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<body>
+
+    <!-- ライブ詳細画面のタイトル -->
+    <h1>ライブ詳細</h1>
+
+    <!-- 公演名・ツアー名を表示する -->
+    {% if schedule.event_name %}
+        <h2>{{ schedule.event_name }}</h2>
+    {% else %}
+        <h2>{{ schedule.festival_name }}</h2>
+    {% endif %}
+
+    <!-- ライブ開催日を「2026年8月20日」の形式で表示する -->
+    <p>日付：{{ schedule.event_date|date:"Y年n月j日" }}</p>
+
+
+    <!-- アーティストを表示する -->
+    {% if schedule.artist %}
+        <p>アーティスト：{{ schedule.artist }}</p>
+    {% endif %}
+
+    <!-- 会場を表示する -->
+    <p>会場：{{ schedule.venue }}</p>
+
+    <!-- 開場時間を「17:00」の形式で表示する -->
+    <p>開場：{{ schedule.open_time|time:"H:i" }}</p>
+
+
+    <!-- 開演時間を「18:00」の形式で表示する -->
+    <p>開演：{{ schedule.start_time|time:"H:i" }}</p>
+
+    <!-- メモが入力されている場合だけ表示する -->
+    {% if schedule.memo %}
+        <p>メモ：{{ schedule.memo }}</p>
+    {% endif %}
+
+    <!-- カレンダー画面へ戻る -->
+    <a href="{% url 'home' %}">カレンダーへ戻る</a>
+
+</body>
+
+</html>

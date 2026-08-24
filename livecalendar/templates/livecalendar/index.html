@@ -8,20 +8,81 @@
 
     <h1>ライブ記録カレンダー</h1>
 
+    <!-- 前の月・現在の月・次の月を表示する -->
+    <h2>
+    <a href="?year={{ prev_year }}&month={{ prev_month }}">＜</a>
+
+    {{ year }}年{{ month }}月
+
+    <a href="?year={{ next_year }}&month={{ next_month }}">＞</a>
+    </h2>
+
+    <!-- 月間カレンダーを表示する -->
+    <table border="1">
+
+    <!-- 曜日を表示する -->
+    <tr>
+        <th>月</th>
+        <th>火</th>
+        <th>水</th>
+        <th>木</th>
+        <th>金</th>
+        <th>土</th>
+        <th>日</th>
+    </tr>
+
+    <!-- 1週間ずつ表示する -->
+    {% for week in calendar_data %}
+    <tr>
+
+        <!-- 1週間の中を1日ずつ表示する -->
+        {% for day_data in week %}
+        <td>
+
+            {% if day_data.day != 0 %}
+
+            <!-- 日付をクリックすると、その日を選択できる -->
+            <a href="?year={{ year }}&month={{ month }}&day={{ day_data.day }}">
+                {{ day_data.day }}
+            </a>
+
+            <!-- この日にライブ予定がある場合だけ表示する -->
+            {% if day_data.schedules %}
+                <br>
+                LIVE
+            {% endif %}
+
+            {% endif %}
+
+        </td>
+        {% endfor %}
+
+    </tr>
+    {% endfor %}
+
+    </table>
+
     <!-- 登録されているライブ予定を表示する -->
-    <h2>ライブ予定</h2>
+    {% if selected_day %}
+        <h2>{{ month }}月{{ selected_day }}日のライブ予定</h2>
+    {% else %}
+        <h2>ライブ予定</h2>
+    {% endif %}
 
     
-    <!-- 登録されているライブ予定を1件ずつ表示する -->
-    {% for schedule in live_schedules %}
+    {% for schedule in selected_schedules %}
 
-    <h3>{{ schedule.event_name }}</h3>
+     <!-- ライブ予定をクリックするとライブ詳細画面へ移動する -->
+    <a href="{% url 'live_detail' schedule.id %}">
+        <h3>{{ schedule.event_name }}</h3>
 
-    <p>日付：{{ schedule.event_date|date:"Y年n月j日" }}</p>
-    <p>アーティスト：{{ schedule.artist }}</p>
-    <p>会場：{{ schedule.venue }}</p>
-    <p>開場：{{ schedule.open_time|time:"H:i" }}</p>
-    <p>開演：{{ schedule.start_time|time:"H:i" }}</p>
+        <p>日付：{{ schedule.event_date|date:"Y年n月j日" }}</p>
+        <p>アーティスト：{{ schedule.artist }}</p>
+        <p>会場：{{ schedule.venue }}</p>
+        <p>開場：{{ schedule.open_time|time:"H:i" }}</p>
+        <p>開演：{{ schedule.start_time|time:"H:i" }}</p>
+
+    </a>
 
     {% empty %}
 
