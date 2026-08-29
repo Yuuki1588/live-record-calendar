@@ -22,6 +22,13 @@
         <p>アーティスト：{{ schedule.artist }}</p>
     {% endif %}
 
+    <!-- 対バンアーティストが登録されている場合に表示する -->
+    {% for opponent in schedule.opponentartist_set.all %}
+    <p>対バンアーティスト：{{ opponent.artist }}</p>
+    {% empty %}
+    <p>対バンアーティスト：なし</p>
+    {% endfor %}
+    
     <!-- 会場を表示する -->
     <p>会場：{{ schedule.venue }}</p>
 
@@ -36,7 +43,13 @@
     {% if schedule.memo %}
         <p>メモ：{{ schedule.memo }}</p>
     {% endif %}
+    
+    <!-- ライブ予定を削除する -->
+    <a href="{% url 'live_delete' schedule.pk %}">
+        削除
+    </a>
 
+<br><br>
     <!-- カレンダー画面へ戻る -->
     <a href="{% url 'home' %}">カレンダーへ戻る</a>
 

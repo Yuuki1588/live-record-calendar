@@ -7,11 +7,11 @@ from datetime import date
 # HTMLを表示したり、別のページへ移動したりするための機能
 from django.shortcuts import render, redirect
 
-# 作成した新規登録フォームを使えるようにする
-from .forms import SignUpForm
+# 新規登録フォームとライブ予定登録フォームを使えるようにする
+from .forms import SignUpForm, LiveScheduleForm
 
-# ライブ予定のデータを使えるようにする
-from .models import LiveSchedule
+# ライブ予定.アーティスト・対バンアーティストのデータを使えるようにするのデータを使えるようにする
+from .models import LiveSchedule, Artist, OpponentArtist
 
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
@@ -161,5 +161,165 @@ def live_detail(request, schedule_id):
         'livecalendar/live_detail.html',
         {
             'schedule': schedule,
+        }
+    )
+
+
+@login_required
+def live_create(request):
+
+    # 登録ボタンが押された場合
+    if request.method == "POST":
+        form = LiveScheduleForm(request.POST)
+
+        if form.is_valid():
+            schedule = form.save(commit=False)
+            schedule.user = request.user
+            schedule.save()
+
+            # 対バンアーティストを取得
+            opponent_names = form.cleaned_data["opponent_artists"]
+
+            # カンマで1組ずつ分ける
+            for opponent_name in opponent_names.split(","):
+                opponent_name = opponent_name.strip()
+
+                if opponent_name:
+                    opponent_artist, created = Artist.objects.get_or_create(
+                        artist_name=opponent_name
+                    )
+
+                    OpponentArtist.objects.create(
+                        live_schedule=schedule,
+                        artist=opponent_artist
+                    )
+
+            # 全対バンの登録が終わってから戻る
+            return redirect("home")
+
+    # 最初にライブ予定追加画面を開いた場合
+    else:
+        form = LiveScheduleForm()
+
+    # ライブ予定追加画面を表示する
+    return render(
+        request,
+        "livecalendar/live_create.html",
+        {
+            "form": form,
+        }
+    )
+
+# ライブ予定を編集する
+@login_required
+def live_edit(request, pk):
+
+    # 編集するライブ予定を取得する
+    schedule = LiveSchedule.objects.get(
+        pk=pk,
+        user=request.user
+        )
+
+    # 保存ボタンが押された場合
+    if request.method == "POST":
+        form = LiveScheduleForm(
+            request.POST,
+            instance=schedule
+        )
+
+        # 入力内容に問題がない場合
+        if form.is_valid():
+
+            # ライブ予定の編集内容を保存する
+            form.save()
+
+            # 今まで登録されていた対バン情報を削除する
+            OpponentArtist.objects.filter(
+                live_schedule=schedule
+            ).delete()
+
+            # 編集画面に入力された対バンアーティストを取得する
+            opponent_names = form.cleaned_data["opponent_artists"]
+
+            # カンマで区切って、対バンアーティストを1組ずつ取り出す
+            for opponent_name in opponent_names.split(","):
+
+                # 名前の前後にある余分な空白を削除する
+                opponent_name = opponent_name.strip()
+
+                # 名前が入力されている場合
+                if opponent_name:
+
+                    # 同じ名前のアーティストを探す
+                    # 登録されていなければ新しくArtistテーブルに登録する
+                    opponent_artist, created = Artist.objects.get_or_create(
+                        artist_name=opponent_name
+                    )
+
+                    # このライブ予定の対バンアーティストとして保存する
+                    OpponentArtist.objects.create(
+                        live_schedule=schedule,
+                        artist=opponent_artist
+                    )
+
+            # 保存後はライブ詳細画面へ戻る
+            return redirect(
+                "live_detail",
+                schedule_id=schedule.pk
+            )
+
+    # 最初に編集画面を開いた場合
+    else:
+
+        # 現在登録されている対バンアーティスト名を取得する
+        opponent_names = ", ".join(
+            opponent.artist.artist_name
+            for opponent in schedule.opponentartist_set.all()
+        )
+
+        # 現在のライブ情報を編集フォームに表示する
+        form = LiveScheduleForm(
+            instance=schedule,
+            initial={
+                "opponent_artists": opponent_names
+            }
+        )
+
+    # 編集画面を表示する
+    return render(
+        request,
+        "livecalendar/live_edit.html",
+        {
+            "form": form,
+            "schedule": schedule,
+        }
+    )
+
+
+# ライブ予定を削除する
+@login_required
+def live_delete(request, pk):
+
+    # ログイン中のユーザーのライブ予定を取得する
+    schedule = LiveSchedule.objects.get(
+        pk=pk,
+        user=request.user
+    )
+
+    # 削除ボタンが押された場合
+    if request.method == "POST":
+
+        # ライブ予定を削除する
+        schedule.delete()
+
+        # 削除後はカレンダー画面へ戻る
+        return redirect("home")
+
+    # 削除確認画面を表示する
+    return render(
+        request,
+        "livecalendar/live_delete.html",
+        {
+            "schedule": schedule,
         }
     )

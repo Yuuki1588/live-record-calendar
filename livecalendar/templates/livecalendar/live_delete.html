@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ライブ予定削除</title>
+</head>
+
+<body>
+
+    <!-- 削除確認画面のタイトル -->
+    <h1>ライブ予定削除</h1>
+
+    <!-- 削除するライブ名を表示 -->
+    <p>
+        「{{ schedule.event_name }}」を本当に削除しますか？
+    </p>
+
+    <!-- 削除ボタン -->
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">削除する</button>
+    </form>
+
+    <!-- 削除をやめてライブ詳細画面へ戻る -->
+    <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
+        キャンセル
+    </a>
+</body>
+
+</html>

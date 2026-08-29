@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ライブ予定編集</title>
+</head>
+
+<body>
+
+    <!-- ライブ予定編集画面のタイトル -->
+    <h1>ライブ予定編集</h1>
+
+    <!-- ライブ予定を編集するフォーム -->
+    <form method="post">
+
+        <!-- 不正なフォーム送信を防ぐため -->
+        {% csrf_token %}
+
+        <!-- 現在登録されているライブ情報を表示 -->
+        {{ form.as_p }}
+
+        <!-- 編集内容を保存する -->
+        <button type="submit">保存</button>
+
+    </form>
+
+    <!-- 保存せずライブ詳細画面へ戻る -->
+    <p>
+        <a href="{% url 'live_detail' schedule.pk %}">
+            ライブ詳細へ戻る
+        </a>
+    </p>
+
+</body>
+
+</html>
