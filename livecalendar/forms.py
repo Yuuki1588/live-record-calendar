@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 # Djangoのモデルを使ったフォームを作成するために読み込む
 from django import forms
 
-# ライブ予定のLiveScheduleモデルを読み込む
-from .models import LiveSchedule
+# ライブ予定・ライブ記録・記録写真のモデルを読み込む
+from .models import LiveSchedule, LiveRecord, RecordPhoto
 
 
 # 新規登録フォームを作成
@@ -61,3 +61,33 @@ class LiveScheduleForm(forms.ModelForm):
                 "open_time": forms.TimeInput(attrs={"type": "time"}),
                 "start_time": forms.TimeInput(attrs={"type": "time"}),
             }
+
+# ライブ参戦後の記録を入力するフォーム
+class LiveRecordForm(forms.ModelForm):
+
+    # フォームの設定
+    class Meta:
+
+        # LiveRecordモデルに入力内容を保存
+        model = LiveRecord
+
+        # 記録画面で入力する項目
+        fields = (
+        "emotion",
+        "impression",
+        "is_favorite",
+    )
+
+# ライブ記録の写真を追加するフォーム
+class RecordPhotoForm(forms.ModelForm):
+
+    # フォームの設定
+    class Meta:
+
+        # RecordPhotoモデルに写真を保存
+        model = RecordPhoto
+
+        # 写真を選択する項目
+        fields = (
+            "photo",
+        )

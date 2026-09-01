@@ -44,6 +44,36 @@
         <p>メモ：{{ schedule.memo }}</p>
     {% endif %}
     
+
+<!-- ライブ記録がある場合 -->
+{% if record %}
+
+    <h2>ライブ記録</h2>
+
+    <p>感情：{{ record.get_emotion_display }}</p>
+
+    <p>感想：{{ record.impression }}</p>
+
+    <p>お気に入り：{{ record.is_favorite }}</p>
+
+    <!-- ライブ記録の写真を表示する -->
+{% for photo in record.recordphoto_set.all %}
+    <p>写真：</p>
+
+    <img src="{{ photo.photo.url }}" width="300">
+
+{% endfor %}
+
+<!-- ライブ記録がまだない場合 -->
+{% else %}
+
+    <a href="{% url 'live_record_create' schedule.pk %}">
+        記録を追加
+    </a>
+
+{% endif %}
+
+    <br><br>
     <!-- ライブ予定を削除する -->
     <a href="{% url 'live_delete' schedule.pk %}">
         削除

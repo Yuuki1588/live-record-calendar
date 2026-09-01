@@ -7,11 +7,11 @@ from datetime import date
 # HTMLを表示したり、別のページへ移動したりするための機能
 from django.shortcuts import render, redirect
 
-# 新規登録フォームとライブ予定登録フォームを使えるようにする
-from .forms import SignUpForm, LiveScheduleForm
+# 新規登録・ライブ予定・ライブ記録のフォームを使えるようにする
+from .forms import SignUpForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm
 
-# ライブ予定.アーティスト・対バンアーティストのデータを使えるようにするのデータを使えるようにする
-from .models import LiveSchedule, Artist, OpponentArtist
+# ライブ予定・アーティスト・対バンアーティスト・ライブ記録のデータを使えるようにする
+from .models import LiveSchedule, Artist, OpponentArtist, LiveRecord
 
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
@@ -155,12 +155,18 @@ def live_detail(request, schedule_id):
         user=request.user
     )
 
+    # このライブに保存されている記録を取得する
+    record = LiveRecord.objects.filter(
+        live_schedule=schedule
+    ).first()
+
     # ライブ詳細画面を表示する
     return render(
         request,
         'livecalendar/live_detail.html',
         {
             'schedule': schedule,
+            'record': record,
         }
     )
 
@@ -320,6 +326,65 @@ def live_delete(request, pk):
         request,
         "livecalendar/live_delete.html",
         {
+            "schedule": schedule,
+        }
+    )
+
+
+# ライブ参戦後の記録を追加する
+@login_required
+def live_record_create(request, pk):
+
+    # ログイン中のユーザーのライブ予定を取得する
+    schedule = LiveSchedule.objects.get(
+        pk=pk,
+        user=request.user
+    )
+
+    # 保存ボタンが押された場合
+    if request.method == "POST":
+        form = LiveRecordForm(request.POST,request.FILES)
+
+        # 写真を登録するフォーム
+        photo_form = RecordPhotoForm(request.POST,request.FILES)
+
+        # 入力内容に問題がなければ保存する
+        if form.is_valid() and photo_form.is_valid():
+            record = form.save(commit=False)
+
+            # どのライブの記録なのかを設定する
+            record.live_schedule = schedule
+
+            # ライブ記録を保存する
+            record.save()
+
+            # 写真をライブ記録に紐づけて保存する
+            photo = photo_form.save(commit=False)
+
+            photo.live_record = record
+
+            photo.save()
+
+            # 保存後はライブ詳細画面へ戻る
+            return redirect(
+                "live_detail",
+                schedule_id=schedule.pk
+            )
+
+    # 最初に記録画面を開いた場合
+    else:
+        form = LiveRecordForm()
+
+        # 写真を登録するフォーム
+        photo_form = RecordPhotoForm()
+
+    # ライブ記録追加画面を表示する
+    return render(
+        request,
+        "livecalendar/live_record_create.html",
+        {
+            "form": form,
+            "photo_form": photo_form,
             "schedule": schedule,
         }
     )

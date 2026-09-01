@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ライブ記録追加</title>
+</head>
+
+<body>
+
+    <!-- 画面タイトル -->
+    <h1>ライブ記録追加</h1>
+
+    <!-- どのライブの記録なのか表示する -->
+    <h2>{{ schedule.event_name }}</h2>
+
+    <!-- ライブ記録を入力するフォーム -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+       
+        <!-- ライブの写真を選択する -->
+        {{ photo_form.as_p }}
+
+        <!-- 入力した記録を保存する -->
+        <button type="submit">記録を保存</button>
+    </form>
+
+    <br>
+
+    <!-- ライブ詳細画面へ戻る -->
+    <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
+        キャンセル
+    </a>
+
+</body>
+
+</html>

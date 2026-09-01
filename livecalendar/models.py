@@ -147,14 +147,24 @@ class LiveRecord(models.Model):
         on_delete=models.CASCADE
     )
 
+    # 感情の選択肢
+    EMOTION_CHOICES = [
+        ("最高", "最高"),
+        ("楽しかった", "楽しかった"),
+        ("感動", "感動"),
+        ("普通", "普通"),
+        ("残念", "残念"),
+    ]
+
     # ライブに対する感情
-    impression = models.CharField(
-    max_length=20
+    emotion = models.CharField(
+        max_length=20,
+        choices=EMOTION_CHOICES,
     )
 
     # ライブの感想
-    thoughts = models.TextField(
-    blank=True
+    impression = models.TextField(
+        blank=True
     )
 
     # このライブ記録がお気に入りかどうか

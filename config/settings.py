@@ -126,3 +126,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 # ログインしていない場合に移動するログイン画面を指定する
 LOGIN_URL = '/login/'
+
+# アップロードした画像を表示するための設定
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
