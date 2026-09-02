@@ -23,6 +23,14 @@
         <!-- ライブの写真を選択する -->
         {{ photo_form.as_p }}
 
+        <!-- セットリストを入力する -->
+        <h3>セットリスト</h3>
+        {{ setlist_formset.management_form }}
+
+        {% for setlist_form in setlist_formset %}
+            {{ setlist_form.as_p }}
+        {% endfor %}
+
         <!-- 入力した記録を保存する -->
         <button type="submit">記録を保存</button>
     </form>

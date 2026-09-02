@@ -7,14 +7,14 @@ from datetime import date
 # HTMLを表示したり、別のページへ移動したりするための機能
 from django.shortcuts import render, redirect
 
-# 新規登録・ライブ予定・ライブ記録のフォームを使えるようにする
-from .forms import SignUpForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm
+# 新規登録・ライブ予定・ライブ記録・セットリストのフォームを使えるようにする
+from .forms import SignUpForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm, SetListForm, SetListFormSet
 
 # ライブ予定・アーティスト・対バンアーティスト・ライブ記録のデータを使えるようにする
-from .models import LiveSchedule, Artist, OpponentArtist, LiveRecord
-
+from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
+
 
 # ホーム画面を表示する
 @login_required
@@ -348,8 +348,12 @@ def live_record_create(request, pk):
         # 写真を登録するフォーム
         photo_form = RecordPhotoForm(request.POST,request.FILES)
 
+         # セットリストを登録するフォーム
+        setlist_formset = SetListFormSet(request.POST)
+
+
         # 入力内容に問題がなければ保存する
-        if form.is_valid() and photo_form.is_valid():
+        if form.is_valid() and photo_form.is_valid() and setlist_formset.is_valid():
             record = form.save(commit=False)
 
             # どのライブの記録なのかを設定する
@@ -365,9 +369,17 @@ def live_record_create(request, pk):
 
             photo.save()
 
+            # セットリストを1曲ずつ保存する
+            for setlist_form in setlist_formset:
+
+                if setlist_form.cleaned_data:
+                    setlist = setlist_form.save(commit=False)
+                    setlist.live_record = record
+                    setlist.save()
+
             # 保存後はライブ詳細画面へ戻る
             return redirect(
-                "live_detail",
+                "live_detail",                               
                 schedule_id=schedule.pk
             )
 
@@ -378,6 +390,9 @@ def live_record_create(request, pk):
         # 写真を登録するフォーム
         photo_form = RecordPhotoForm()
 
+        # セットリストを登録するフォーム
+        setlist_formset = SetListFormSet()
+
     # ライブ記録追加画面を表示する
     return render(
         request,
@@ -385,6 +400,159 @@ def live_record_create(request, pk):
         {
             "form": form,
             "photo_form": photo_form,
+            "setlist_formset": setlist_formset,
             "schedule": schedule,
+        }
+    )
+
+
+# ライブ記録を編集する
+@login_required
+def live_record_edit(request, pk):
+
+    # ログイン中のユーザーのライブ予定を取得する
+    schedule = LiveSchedule.objects.get(
+        pk=pk,
+        user=request.user
+    )
+
+    # このライブ予定に紐づいているライブ記録を取得する
+    record = LiveRecord.objects.get(
+        live_schedule=schedule
+    )
+
+
+    # 変更を保存する場合
+    if request.method == "POST":
+
+        # ライブ記録の変更内容を受け取る
+        form = LiveRecordForm(
+            request.POST,
+            request.FILES,
+            instance=record
+        )
+
+        # 写真の変更内容を受け取る
+        photo = RecordPhoto.objects.filter(
+            live_record=record
+        ).first()
+
+        photo_form = RecordPhotoForm(
+            request.POST,
+            request.FILES,
+            instance=photo
+        )
+
+        # セットリストの変更内容を受け取る
+        setlist_formset = SetListFormSet(
+            request.POST,
+            queryset=SetList.objects.filter(
+                live_record=record
+            )
+        )
+
+        # すべての入力内容に問題がなければ保存する
+        if (
+            form.is_valid()
+            and photo_form.is_valid()
+            and setlist_formset.is_valid()
+        ):
+            # ライブ記録を更新する
+            record = form.save()
+
+            # 写真を更新する
+            photo = photo_form.save(commit=False)
+            photo.live_record = record
+            photo.save()
+
+            # セットリストを更新する
+            setlists = setlist_formset.save(commit=False)
+
+            for setlist in setlists:
+                setlist.live_record = record
+                setlist.save()
+
+            # 保存後はライブ詳細画面へ戻る
+            return redirect(
+                "live_detail",
+                schedule_id=schedule.pk
+            )
+
+    # 編集画面を最初に開いた場合
+    if request.method == "GET":
+
+        # 保存済みのライブ記録をフォームに入れる
+        form = LiveRecordForm(
+            instance=record
+        )
+
+        # 保存済みの写真を取得する
+        photo = RecordPhoto.objects.filter(
+            live_record=record
+        ).first()
+
+        # 写真フォームを作る
+        photo_form = RecordPhotoForm(
+            instance=photo
+        )
+
+        # 保存済みのセットリストを取得する
+        setlists = SetList.objects.filter(
+            live_record=record
+        )
+
+        # 保存済みのセットリストをフォームに入れる
+        setlist_formset = SetListFormSet(
+            queryset=setlists
+        )
+
+        # ライブ記録編集画面を表示する
+    return render(
+        request,
+        "livecalendar/live_record_edit.html",
+        {
+            "form": form,
+            "photo_form": photo_form,
+            "setlist_formset": setlist_formset,
+            "schedule": schedule,
+            "record": record,
+        }
+    )
+
+
+# ライブ記録を削除する
+@login_required
+def live_record_delete(request, pk):
+
+    # ログイン中のユーザーのライブ予定を取得する
+    schedule = LiveSchedule.objects.get(
+        pk=pk,
+        user=request.user
+    )
+
+    # このライブ予定に紐づいている記録を取得する
+    record = LiveRecord.objects.get(
+        live_schedule=schedule
+    )
+
+    # 削除ボタンが押された場合
+    if request.method == "POST":
+
+        # ライブ記録を削除する
+        record.delete()
+
+        # ライブ詳細画面に戻る
+        return redirect(
+            "live_detail",
+            schedule_id=schedule.pk
+        )
+
+    # 削除確認画面を表示する
+    return render(
+        request,
+        "livecalendar/live_record_delete.html",
+        {
+            "schedule": schedule,
+            "record": record,
         }
     )

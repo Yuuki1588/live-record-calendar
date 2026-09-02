@@ -194,7 +194,9 @@ class RecordPhoto(models.Model):
 
     # ライブ記録の写真
     photo = models.ImageField(
-    upload_to="record_photos/"
+    upload_to="record_photos/",
+    blank=True,
+    null=True
     )
 
     # 登録日時

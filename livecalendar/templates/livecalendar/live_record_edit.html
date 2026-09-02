@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ライブ記録編集</title>
+</head>
+
+<body>
+
+    <h1>ライブ記録編集</h1>
+
+    <!-- ライブ名を表示 -->
+    <h2>{{ schedule }}</h2>
+
+    <!-- ライブ記録編集フォーム -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- 感情・感想・お気に入り -->
+        {{ form.as_p }}
+
+        <!-- 写真 -->
+        {{ photo_form.as_p }}
+
+        <h2>セットリスト</h2>
+
+        <!-- セットリストの管理情報 -->
+        {{ setlist_formset.management_form }}
+
+        <!-- セットリストを1曲ずつ表示 -->
+        {% for setlist_form in setlist_formset %}
+            {{ setlist_form.as_p }}
+        {% endfor %}
+
+                <!-- 編集内容を保存する -->
+        <button type="submit">変更を保存</button>
+
+    </form>
+
+    <!-- 保存せずライブ詳細画面へ戻る -->
+    <p>
+        <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
+            キャンセル
+        </a>
+    </p>
+
+</body>
+
+</html>

@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 # Djangoのモデルを使ったフォームを作成するために読み込む
 from django import forms
 
-# ライブ予定・ライブ記録・記録写真のモデルを読み込む
-from .models import LiveSchedule, LiveRecord, RecordPhoto
+# ライブ予定・ライブ記録・記録写真.セットリストのモデルを読み込む
+from .models import LiveSchedule, LiveRecord, RecordPhoto, SetList
 
 
 # 新規登録フォームを作成
@@ -91,3 +91,29 @@ class RecordPhotoForm(forms.ModelForm):
         fields = (
             "photo",
         )
+
+# セットリストを入力するフォーム
+class SetListForm(forms.ModelForm):
+
+    # フォームの設定
+    class Meta:
+
+        # SetListモデルに入力内容を保存
+        model = SetList
+
+        # 入力する項目
+        fields = (
+            "song_name",
+            "song_order",
+        )
+
+
+from django.forms import modelformset_factory
+
+
+# セットリストを複数曲入力できるようにする
+SetListFormSet = modelformset_factory(
+    SetList,
+    form=SetListForm,
+    extra=5
+)

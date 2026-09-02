@@ -56,14 +56,30 @@
 
     <p>お気に入り：{{ record.is_favorite }}</p>
 
-    <!-- ライブ記録の写真を表示する -->
-{% for photo in record.recordphoto_set.all %}
-    <p>写真：</p>
+    <!-- ライブ記録を編集する -->
+    <a href="{% url 'live_record_edit' schedule.pk %}">
+        記録を編集
+    </a>
 
-    <img src="{{ photo.photo.url }}" width="300">
+    <a href="{% url 'live_record_delete' schedule.pk %}">
+        記録を削除
+    </a>
+
+{% for photo in record.recordphoto_set.all %}
+
+    {% if photo.photo %}
+        <p>写真：</p>
+        <img src="{{ photo.photo.url }}" width="300">
+    {% endif %}
 
 {% endfor %}
+    <h3>セットリスト</h3>
 
+    {% for setlist in record.setlist_set.all %}
+        <p>{{ setlist.song_order }}. {{ setlist.song_name }}</p>
+    {% empty %}
+        <p>セットリストなし</p>
+{% endfor %}
 <!-- ライブ記録がまだない場合 -->
 {% else %}
 

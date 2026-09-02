@@ -29,4 +29,8 @@ urlpatterns = [
     path("live/<int:pk>/delete/", views.live_delete, name="live_delete"),
     # ライブ参戦後の記録を追加する画面
     path("live/<int:pk>/record/add/",views.live_record_create,name="live_record_create"),
+    # ライブ記録を削除する画面
+    path("live/<int:pk>/record/delete/", views.live_record_delete, name="live_record_delete"),
+    # ライブ記録を編集する画面
+    path("live/<int:pk>/record/edit/",views.live_record_edit,name="live_record_edit"),
 ]
