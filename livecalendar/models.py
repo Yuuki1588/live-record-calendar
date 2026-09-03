@@ -19,9 +19,10 @@ class Artist(models.Model):
 # ライブ会場の情報を保存するモデル
 class LiveVenue(models.Model):
     venue_name = models.CharField(max_length=100)
+    venue_name_kana = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-        # 管理画面などでライブ会場名を表示する
+    # 管理画面などでライブ会場名を表示する
     def __str__(self):
         return self.venue_name
 

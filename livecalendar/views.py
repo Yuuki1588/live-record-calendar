@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from .forms import SignUpForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm, SetListForm, SetListFormSet
 
 # ライブ予定・アーティスト・対バンアーティスト・ライブ記録のデータを使えるようにする
-from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto
+from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto, OpponentArtist,LiveVenue
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
 
@@ -554,5 +554,138 @@ def live_record_delete(request, pk):
         {
             "schedule": schedule,
             "record": record,
+        }
+    )
+
+
+# ライブ記録の履歴を表示する
+@login_required
+def history(request):
+
+    # ログイン中のユーザーのライブ記録を取得する
+    records = LiveRecord.objects.filter(
+        live_schedule__user=request.user
+    )
+
+    # ライブ記録に登録されているアーティスト一覧を取得する
+    artists = Artist.objects.filter(
+        id__in=records.values_list(
+            "live_schedule__artist_id",
+            flat=True
+        )
+    ).order_by("artist_name")
+
+    # 選択された年を取得する
+    year = request.GET.get("year")
+
+    # 年が選択されている場合、その年の記録だけに絞り込む
+    if year:
+        records = records.filter(
+            live_schedule__event_date__year=year
+        )
+
+    # 選択された月を取得する
+    month = request.GET.get("month")
+
+    # 月が選択されている場合、その月の記録だけに絞り込む
+    if month:
+        records = records.filter(
+            live_schedule__event_date__month=month
+        )
+
+
+    # 選択されたアーティストを取得する
+    artist = request.GET.get("artist")
+
+    # アーティストが選択されている場合、そのアーティストの記録だけに絞り込む
+    if artist:
+        records = records.filter(
+            live_schedule__artist_id=artist
+        )
+
+    # 選択された会場を取得する
+    venue = request.GET.get("venue")
+
+    # 会場が選択されている場合、その会場の記録だけに絞り込む
+    if venue:
+        records = records.filter(
+            live_schedule__venue_id=venue
+            )
+
+    # 選択された感情を取得する
+    emotion = request.GET.get("emotion")
+
+    # 感情が選択されている場合、その感情の記録だけに絞り込む
+    if emotion:
+        records = records.filter(
+            emotion=emotion
+        )
+
+    # お気に入りの絞り込み条件を取得する
+    favorite = request.GET.get("favorite")
+
+    # お気に入りのみが選択されている場合
+    if favorite == "true":
+        records = records.filter(
+            is_favorite=True
+        )
+
+    # 選択された並べ替え方法を取得する
+    sort = request.GET.get("sort", "new")
+
+    # 選択された方法で並べ替える
+    if sort == "old":
+        records = records.order_by("live_schedule__event_date")
+
+    elif sort == "artist":
+        records = records.order_by("live_schedule__artist__artist_name")
+
+    elif sort == "venue":
+        records = records.order_by("live_schedule__venue__venue_name_kana")
+    else:
+        records = records.order_by("-live_schedule__event_date")
+
+    # 一番古いライブ記録を取得する
+    oldest_record = LiveRecord.objects.filter(
+        live_schedule__user=request.user
+    ).order_by(
+        "live_schedule__event_date"
+    ).first()
+
+    # 一番新しいライブ記録を取得する
+    newest_record = LiveRecord.objects.filter(
+        live_schedule__user=request.user
+    ).order_by(
+        "-live_schedule__event_date"
+    ).first()
+
+    # 一番古い年から一番新しい年までの一覧を作る
+    if oldest_record and newest_record:
+        oldest_year = oldest_record.live_schedule.event_date.year
+        newest_year = newest_record.live_schedule.event_date.year
+
+        years = range(newest_year, oldest_year - 1, -1)
+    else:
+        years = []
+
+    # 会場の一覧を取得する
+    venues = LiveVenue.objects.all().order_by("venue_name")
+
+    # 履歴画面を表示する
+    return render(
+        request,
+        "livecalendar/history.html",
+        {
+            "records": records,
+            "sort": sort,
+            "years": years,
+            "year": year,
+            "month": month,
+            "artists": artists,
+            "artist": artist,
+            "venues": venues,
+            "venue": venue,
+            "emotion": emotion,
+            "favorite": favorite,
         }
     )

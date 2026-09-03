@@ -21,8 +21,6 @@ urlpatterns = [
     path('live/add/', views.live_create, name='live_create'),
     # ライブ詳細画面
     path('live/<int:schedule_id>/', views.live_detail, name='live_detail'),
-    # ライブ予定追加画面
-    path('live/add/', views.live_create, name='live_create'),
     # ライブ予定を編集
     path("live/<int:pk>/edit/", views.live_edit, name="live_edit"),
     # ライブ予定を削除する画面
@@ -33,4 +31,6 @@ urlpatterns = [
     path("live/<int:pk>/record/delete/", views.live_record_delete, name="live_record_delete"),
     # ライブ記録を編集する画面
     path("live/<int:pk>/record/edit/",views.live_record_edit,name="live_record_edit"),
+    # ライブ記録の履歴画面
+    path("history/", views.history, name="history"),
 ]
