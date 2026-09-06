@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>統計</title>
+</head>
+
+<body>
+
+    <h1>統計</h1>
+
+    <!-- 表示する年を選択する -->
+    <form method="get">
+
+        <select name="year">
+            <option value="" {% if not selected_year %}selected{% endif %}>
+                すべて
+            </option>
+
+            {% for year in years %}
+                <option value="{{ year.year }}"
+                    {% if selected_year == year.year|stringformat:"s" %}selected{% endif %}>
+                    {{ year.year }}年
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">表示</button>
+
+    </form>
+
+    <h2>総ライブ回数</h2>
+    <p>{{ total_live_count }}回</p>
+
+    <h2>参戦日数</h2>
+    <p>{{ participation_days }}日</p>
+
+    <h2>行った会場数</h2>
+    <p>{{ venue_count }}会場</p>
+
+    <h2>年間</h2>
+
+    {% for data in monthly_data %}
+        <p>
+            {{ data.month }}月：{{ data.count }}回
+        </p>
+    {% endfor %}
+
+    <h2>アーティスト別</h2>
+
+    {% for artist in artist_counts %}
+        <p>
+            {{ artist.live_schedule__artist__artist_name }}
+            ：{{ artist.count }}回
+        </p>
+    {% empty %}
+        <p>まだライブ記録がありません。</p>
+    {% endfor %}
+
+    <h2>会場別</h2>
+
+    {% for venue in venue_counts %}
+        <p>
+            {{ venue.live_schedule__venue__venue_name }}
+            ：{{ venue.count }}回
+        </p>
+    {% empty %}
+        <p>まだライブ記録がありません。</p>
+    {% endfor %}
+
+</body>
+
+</html>

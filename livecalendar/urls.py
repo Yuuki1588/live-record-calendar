@@ -33,4 +33,6 @@ urlpatterns = [
     path("live/<int:pk>/record/edit/",views.live_record_edit,name="live_record_edit"),
     # ライブ記録の履歴画面
     path("history/", views.history, name="history"),
+    # 統計画面
+    path("stats/", views.stats, name="stats"),
 ]

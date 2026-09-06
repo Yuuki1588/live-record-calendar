@@ -12,8 +12,12 @@ from .forms import SignUpForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm
 
 # ライブ予定・アーティスト・対バンアーティスト・ライブ記録のデータを使えるようにする
 from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto, OpponentArtist,LiveVenue
+
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
+
+# データの件数を数えるためにCountを読み込む
+from django.db.models import Count
 
 
 # ホーム画面を表示する
@@ -687,5 +691,112 @@ def history(request):
             "venue": venue,
             "emotion": emotion,
             "favorite": favorite,
+        }
+    )
+
+
+# 統計画面を表示する
+@login_required
+def stats(request):
+
+    # ログイン中のユーザーのライブ記録を取得する
+    records = LiveRecord.objects.filter(
+        live_schedule__user=request.user
+    )
+
+    # 選択された年を取得する
+    selected_year = request.GET.get("year")
+
+    # ライブ記録に存在する年の一覧を取得する
+    years = LiveRecord.objects.filter(
+        live_schedule__user=request.user
+    ).dates(
+        "live_schedule__event_date",
+        "year",
+        order="DESC"
+    )
+
+    # 年が選択されている場合、その年の記録だけに絞り込む
+    if selected_year:
+        records = records.filter(
+            live_schedule__event_date__year=selected_year
+        )
+
+    # 総ライブ回数を数える
+    total_live_count = records.count()
+
+    # 参戦した日数を数える
+    participation_days = records.values(
+        "live_schedule__event_date"
+    ).distinct().count()
+
+    # 行った会場の数を数える
+    venue_count = records.values(
+        "live_schedule__venue"
+    ).distinct().count()
+
+    # アーティスト別のライブ回数を取得する
+    artist_counts = records.values(
+        "live_schedule__artist__artist_name"
+    ).annotate(
+        count=Count("id")
+    )
+
+    # 会場別のライブ回数を取得する
+    venue_counts = records.values(
+        "live_schedule__venue__venue_name"
+    ).annotate(
+        count=Count("id")
+    )
+
+    # 年ごとのライブ回数を取得する
+    year_counts = LiveRecord.objects.filter(
+        live_schedule__user=request.user
+    ).values(
+        "live_schedule__event_date__year"
+    ).annotate(
+        count=Count("id")
+    ).order_by(
+        "live_schedule__event_date__year"
+    )
+
+    # 月ごとのライブ回数を取得する
+    month_counts = records.values(
+        "live_schedule__event_date__month"
+    ).annotate(
+        count=Count("id")
+    )
+
+    # 1月〜12月のライブ回数を入れる
+    monthly_data = []
+
+    for month in range(1, 13):
+
+        # その月のライブ回数を取得する
+        count = 0
+
+        for item in month_counts:
+            if item["live_schedule__event_date__month"] == month:
+                count = item["count"]
+                break
+
+        monthly_data.append({
+            "month": month,
+            "count": count,
+        })
+
+    # 統計画面を表示する
+    return render(
+        request,
+        "livecalendar/stats.html",
+        {
+            "total_live_count": total_live_count,
+            "participation_days": participation_days,
+            "venue_count": venue_count,
+            "artist_counts": artist_counts,
+            "venue_counts": venue_counts,
+            "years": years,
+            "selected_year": selected_year,
+            "monthly_data": monthly_data,
         }
     )
