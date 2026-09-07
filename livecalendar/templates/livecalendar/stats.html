@@ -13,6 +13,8 @@
     <!-- 表示する年を選択する -->
     <form method="get">
 
+        <input type="hidden" name="tab" value="{{ selected_tab }}">
+
         <select name="year">
             <option value="" {% if not selected_year %}selected{% endif %}>
                 すべて
@@ -28,46 +30,86 @@
 
         <button type="submit">表示</button>
 
+        
+        <!-- 統計の表示切り替え -->
+        <div>
+            <a href="{% url 'stats' %}?year={{ selected_year }}&tab=year">年間</a>
+
+            <a href="{% url 'stats' %}?year={{ selected_year }}&tab=artist">アーティスト別</a>
+
+            <a href="{% url 'stats' %}?year={{ selected_year }}&tab=venue">会場別</a>
+        </div>
+
     </form>
 
-    <h2>総ライブ回数</h2>
-    <p>{{ total_live_count }}回</p>
+    {% if selected_tab == "year" %}
 
-    <h2>参戦日数</h2>
-    <p>{{ participation_days }}日</p>
+        <h2>総ライブ回数</h2>
+        <p>{{ total_live_count }}回</p>
 
-    <h2>行った会場数</h2>
-    <p>{{ venue_count }}会場</p>
+        <h2>参戦日数</h2>
+        <p>{{ participation_days }}日</p>
+
+        <h2>行った会場数</h2>
+        <p>{{ venue_count }}会場</p>
+
+    {% endif %}
+
+    {% if selected_tab == "year" %}
 
     <h2>年間</h2>
 
-    {% for data in monthly_data %}
-        <p>
-            {{ data.month }}月：{{ data.count }}回
-        </p>
-    {% endfor %}
+    {% if selected_year %}
 
-    <h2>アーティスト別</h2>
+            <!-- 年を選択している場合は月ごとの回数を表示 -->
+            {% for data in monthly_data %}
+                <p>
+                    {{ data.month }}月：{{ data.count }}回
+                </p>
+            {% endfor %}
 
-    {% for artist in artist_counts %}
-        <p>
-            {{ artist.live_schedule__artist__artist_name }}
-            ：{{ artist.count }}回
-        </p>
-    {% empty %}
-        <p>まだライブ記録がありません。</p>
-    {% endfor %}
+        {% else %}
 
-    <h2>会場別</h2>
+            <!-- 「すべて」の場合は年ごとの回数を表示 -->
+            {% for data in year_counts %}
+                <p>
+                    {{ data.live_schedule__event_date__year }}年：{{ data.count }}回
+                </p>
+            {% endfor %}
 
-    {% for venue in venue_counts %}
-        <p>
-            {{ venue.live_schedule__venue__venue_name }}
-            ：{{ venue.count }}回
-        </p>
-    {% empty %}
-        <p>まだライブ記録がありません。</p>
-    {% endfor %}
+        {% endif %}
+
+    {% endif %}
+
+    {% if selected_tab == "artist" %}
+
+        <h2>アーティスト別</h2>
+
+        {% for artist in artist_counts %}
+            <p>
+                {{ artist.live_schedule__artist__artist_name }}
+                ：{{ artist.count }}回
+            </p>
+        {% empty %}
+            <p>まだライブ記録がありません。</p>
+        {% endfor %}
+
+    {% endif %}
+
+    {% if selected_tab == "venue" %}
+
+            <h2>会場別</h2>
+
+            {% for venue in venue_counts %}
+                <p>
+                    {{ venue.live_schedule__venue__venue_name }}
+                    ：{{ venue.count }}回
+                </p>
+            {% empty %}
+                <p>まだライブ記録がありません。</p>
+        {% endfor %}
+
+    {% endif %}
 
 </body>
 

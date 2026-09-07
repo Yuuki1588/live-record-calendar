@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>プロフィール編集</title>
+</head>
+
+<body>
+
+    <h1>プロフィール編集</h1>
+
+    <!-- プロフィールを編集するフォーム -->
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="username">ユーザー名</label>
+
+        <input
+            type="text"
+            id="username"
+            name="username"
+            value="{{ user.username }}"
+            required
+        >
+
+        <button type="submit">保存</button>
+    </form>
+
+</body>
+
+</html>

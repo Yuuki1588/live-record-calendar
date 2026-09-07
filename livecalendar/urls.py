@@ -35,4 +35,14 @@ urlpatterns = [
     path("history/", views.history, name="history"),
     # 統計画面
     path("stats/", views.stats, name="stats"),
+    # マイページ
+    path("mypage/", views.mypage, name="mypage"),
+    # プロフィール編集
+    path("mypage/profile/edit/", views.profile_edit, name="profile_edit"),
+    # お気に入りアーティスト管理
+    path("mypage/favorites/",views.favorite_artist_manage,name="favorite_artist_manage"),
+    # お気に入りアーティスト追加
+    path("mypage/favorites/add/",views.favorite_artist_add,name="favorite_artist_add"),
+    # お気に入りアーティスト削除
+    path("mypage/favorites/<int:pk>/delete/",views.favorite_artist_delete,name="favorite_artist_delete"),
 ]

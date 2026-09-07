@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>マイページ</title>
+</head>
+
+<body>
+
+    <h1>マイページ</h1>
+
+    <!-- ログイン中のユーザー名を表示する -->
+    <h2>{{ request.user.username }}</h2>
+
+    <!-- プロフィール編集画面へ移動する -->
+    <a href="{% url 'profile_edit' %}">プロフィールを編集</a>
+
+    <!-- お気に入りアーティストを表示する -->
+    <h2>お気に入りアーティスト</h2>
+
+    <!-- お気に入りアーティスト管理画面へ移動する -->
+    <a href="{% url 'favorite_artist_manage' %}">編集</a>
+
+    {% for favorite in favorite_artists %}
+        <p>
+            {{ favorite.artist }}
+        </p>
+    {% empty %}
+        <p>お気に入りアーティストはまだ登録されていません。</p>
+    {% endfor %}
+
+</body>
+
+</html>

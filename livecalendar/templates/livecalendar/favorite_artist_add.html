@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>お気に入りアーティスト追加</title>
+</head>
+
+<body>
+
+    <h1>お気に入りアーティスト追加</h1>
+
+    <!-- お気に入りに追加するアーティストを選択する -->
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="artist">アーティスト</label>
+
+        <select name="artist" id="artist" required>
+
+            {% for artist in artists %}
+                <option value="{{ artist.id }}">
+                    {{ artist.artist_name }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+        <button type="submit">追加</button>
+
+    </form>
+
+</body>
+
+</html>

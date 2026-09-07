@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from .forms import SignUpForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm, SetListForm, SetListFormSet
 
 # ライブ予定・アーティスト・対バンアーティスト・ライブ記録のデータを使えるようにする
-from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto, OpponentArtist,LiveVenue
+from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto, OpponentArtist,LiveVenue,FavoriteArtist
 
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
@@ -707,6 +707,9 @@ def stats(request):
     # 選択された年を取得する
     selected_year = request.GET.get("year")
 
+    # 選択された統計タブを取得する
+    selected_tab = request.GET.get("tab", "year")
+
     # ライブ記録に存在する年の一覧を取得する
     years = LiveRecord.objects.filter(
         live_schedule__user=request.user
@@ -740,14 +743,14 @@ def stats(request):
         "live_schedule__artist__artist_name"
     ).annotate(
         count=Count("id")
-    )
+    ).order_by("-count")
 
     # 会場別のライブ回数を取得する
     venue_counts = records.values(
         "live_schedule__venue__venue_name"
     ).annotate(
         count=Count("id")
-    )
+    ).order_by("-count")
 
     # 年ごとのライブ回数を取得する
     year_counts = LiveRecord.objects.filter(
@@ -757,7 +760,7 @@ def stats(request):
     ).annotate(
         count=Count("id")
     ).order_by(
-        "live_schedule__event_date__year"
+        "-live_schedule__event_date__year"
     )
 
     # 月ごとのライブ回数を取得する
@@ -798,5 +801,130 @@ def stats(request):
             "years": years,
             "selected_year": selected_year,
             "monthly_data": monthly_data,
+            "year_counts": year_counts,
+            "selected_tab": selected_tab,
         }
     )
+
+
+# マイページを表示する
+@login_required
+def mypage(request):
+
+    # ログイン中のユーザーのお気に入りアーティストを取得する
+    favorite_artists = FavoriteArtist.objects.filter(
+        user=request.user
+    )
+
+    # マイページを表示する
+    return render(
+        request,
+        "livecalendar/mypage.html",
+        {
+            "favorite_artists": favorite_artists,
+        }
+    )
+
+
+# プロフィール編集画面を表示する
+@login_required
+def profile_edit(request):
+
+    # ログイン中のユーザー情報を取得する
+    user = request.user
+
+    # 保存ボタンが押された場合
+    if request.method == "POST":
+
+        # 入力されたユーザー名を取得する
+        username = request.POST.get("username")
+
+        # ユーザー名を変更して保存する
+        user.username = username
+        user.save()
+
+        # 保存後、マイページに戻る
+        return redirect("mypage")
+
+    # プロフィール編集画面を表示する
+    return render(
+        request,
+        "livecalendar/profile_edit.html",
+        {
+            "user": user,
+        }
+    )
+
+
+# お気に入りアーティスト管理画面を表示する
+@login_required
+def favorite_artist_manage(request):
+
+    # ログイン中のユーザーのお気に入りアーティストを取得する
+    favorite_artists = FavoriteArtist.objects.filter(
+        user=request.user
+    )
+
+    # お気に入りアーティスト管理画面を表示する
+    return render(
+        request,
+        "livecalendar/favorite_artist_manage.html",
+        {
+            "favorite_artists": favorite_artists,
+        }
+    )
+
+
+# お気に入りアーティスト追加画面を表示する
+@login_required
+def favorite_artist_add(request):
+
+    # 登録できるアーティストを取得する
+    artists = Artist.objects.all().order_by("artist_name")
+
+    # 追加ボタンが押された場合
+    if request.method == "POST":
+
+        # 選択されたアーティストIDを取得する
+        artist_id = request.POST.get("artist")
+
+        # 選択されたアーティストを取得する
+        artist = Artist.objects.get(id=artist_id)
+
+        # お気に入りアーティストとして登録する
+        FavoriteArtist.objects.get_or_create(
+            user=request.user,
+            artist=artist
+        )
+
+        # 登録後、お気に入りアーティスト管理画面に戻る
+        return redirect("favorite_artist_manage")
+
+    # お気に入りアーティスト追加画面を表示する
+    return render(
+        request,
+        "livecalendar/favorite_artist_add.html",
+        {
+            "artists": artists,
+        }
+    )
+
+
+# お気に入りアーティストを削除する
+@login_required
+def favorite_artist_delete(request, pk):
+
+    # ログイン中のユーザーのお気に入りから削除対象を取得する
+    favorite = FavoriteArtist.objects.get(
+        id=pk,
+        user=request.user
+    )
+
+    # 削除ボタンが押された場合
+    if request.method == "POST":
+
+        # お気に入りから削除する
+        favorite.delete()
+
+        # 削除後、お気に入りアーティスト管理画面に戻る
+        return redirect("favorite_artist_manage")

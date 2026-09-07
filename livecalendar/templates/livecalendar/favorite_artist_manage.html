@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>お気に入りアーティスト管理</title>
+</head>
+
+<body>
+
+    <h1>お気に入りアーティスト管理</h1>
+
+    {% for favorite in favorite_artists %}
+
+        <p>
+            {{ favorite.artist }}
+
+            <!-- お気に入りアーティストを削除する -->
+            <form
+                method="post"
+                action="{% url 'favorite_artist_delete' favorite.id %}"
+            >
+                {% csrf_token %}
+
+                <button type="submit">削除</button>
+            </form>
+        </p>
+
+    {% empty %}
+
+        <p>お気に入りアーティストはまだ登録されていません。</p>
+
+    {% endfor %}
+
+    <a href="{% url 'favorite_artist_add' %}">
+        ＋ アーティストを追加
+    </a>
+
+</body>
+
+</html>
