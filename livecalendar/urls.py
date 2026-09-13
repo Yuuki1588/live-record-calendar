@@ -45,4 +45,12 @@ urlpatterns = [
     path("mypage/favorites/add/",views.favorite_artist_add,name="favorite_artist_add"),
     # お気に入りアーティスト削除
     path("mypage/favorites/<int:pk>/delete/",views.favorite_artist_delete,name="favorite_artist_delete"),
+    # メールアドレス変更
+    path("mypage/email/change/",views.email_change,name="email_change"),
+    # パスワード変更
+    path("mypage/password/change/",views.password_change,name="password_change"),
+    # ログアウト
+    path("logout/",views.logout_view,name="logout"),
+    # ログアウト確認
+    path("logout/confirm/",views.logout_confirm,name="logout_confirm"),
 ]

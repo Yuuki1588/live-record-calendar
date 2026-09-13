@@ -19,6 +19,9 @@ from django.contrib.auth.decorators import login_required
 # データの件数を数えるためにCountを読み込む
 from django.db.models import Count
 
+# パスワード変更後のログイン維持とログアウト処理を使う
+from django.contrib.auth import update_session_auth_hash, logout
+
 
 # ホーム画面を表示する
 @login_required
@@ -928,3 +931,108 @@ def favorite_artist_delete(request, pk):
 
         # 削除後、お気に入りアーティスト管理画面に戻る
         return redirect("favorite_artist_manage")
+
+
+# メールアドレス変更画面を表示する
+@login_required
+def email_change(request):
+
+    # ログイン中のユーザー情報を取得する
+    user = request.user
+
+    # 保存ボタンが押された場合
+    if request.method == "POST":
+
+        # 入力されたメールアドレスを取得する
+        email = request.POST.get("email")
+
+        # メールアドレスを変更して保存する
+        user.email = email
+        user.save()
+
+        # 保存後、マイページに戻る
+        return redirect("mypage")
+
+        # メールアドレス変更画面を表示する
+        return render(
+        request,
+        "livecalendar/email_change.html",
+        {
+            "user": user,
+        }
+    )
+
+
+# パスワード変更画面を表示する
+@login_required
+def password_change(request):
+
+    # ログイン中のユーザー情報を取得する
+    user = request.user
+
+    # 変更ボタンが押された場合
+    if request.method == "POST":
+
+        # 入力されたパスワードを取得する
+        current_password = request.POST.get("current_password")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        # 現在のパスワードが正しいか確認する
+        if not user.check_password(current_password):
+            return render(
+                request,
+                "livecalendar/password_change.html",
+                {
+                    "error": "現在のパスワードが違います。",
+                }
+            )
+
+        # 新しいパスワードと確認用パスワードが一致するか確認する
+        if new_password != confirm_password:
+            return render(
+                request,
+                "livecalendar/password_change.html",
+                {
+                    "error": "新しいパスワードが一致しません。",
+                }
+            )
+
+        # 新しいパスワードを設定する
+        user.set_password(new_password)
+
+        # 新しいパスワードを保存する
+        user.save()
+
+        # パスワード変更後もログイン状態を維持する
+        update_session_auth_hash(request, user)
+
+        # マイページに戻る
+        return redirect("mypage")
+
+    # パスワード変更画面を表示する
+    return render(
+        request,
+        "livecalendar/password_change.html"
+    )
+
+
+# ログアウト確認画面を表示する
+@login_required
+def logout_confirm(request):
+
+    # ログアウト確認画面を表示する
+    return render(
+        request,
+        "livecalendar/logout_confirm.html"
+    )
+
+# ログアウトする
+@login_required
+def logout_view(request):
+
+    # ログアウトする
+    logout(request)
+
+    # ログイン画面に戻る
+    return redirect("login")

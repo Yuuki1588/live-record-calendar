@@ -30,6 +30,20 @@
         <p>お気に入りアーティストはまだ登録されていません。</p>
     {% endfor %}
 
+    <a href="{% url 'email_change' %}">
+    メールアドレス変更
+    </a>
+
+    <!-- パスワード変更画面へ移動する -->
+    <a href="{% url 'password_change' %}">
+    パスワード変更
+    </a>
+
+    <!-- ログアウト確認画面へ移動する -->
+    <a href="{% url 'logout_confirm' %}">
+    ログアウト
+    </a>
+
 </body>
 
 </html>
