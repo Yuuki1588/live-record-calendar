@@ -212,16 +212,33 @@ def live_create(request):
 
     # 最初にライブ予定追加画面を開いた場合
     else:
-        form = LiveScheduleForm()
 
-    # ライブ予定追加画面を表示する
-    return render(
-        request,
-        "livecalendar/live_create.html",
-        {
-            "form": form,
-        }
-    )
+        # カレンダーから渡された日付を取得する
+        year = request.GET.get("year")
+        month = request.GET.get("month")
+        day = request.GET.get("day")
+
+        # 日付が渡されている場合
+        if year and month and day:
+            selected_date = f"{year}-{int(month):02d}-{int(day):02d}"
+
+            # 選択した日付を最初から入力する
+            form = LiveScheduleForm(
+                initial={"event_date": selected_date}
+            )
+
+        # 日付が渡されていない場合
+        else:
+            form = LiveScheduleForm()
+
+        # ライブ予定追加画面を表示する
+        return render(
+            request,
+            "livecalendar/live_create.html",
+            {
+                "form": form,
+            }
+        )
 
 # ライブ予定を編集する
 @login_required

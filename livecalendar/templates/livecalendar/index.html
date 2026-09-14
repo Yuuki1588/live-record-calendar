@@ -91,6 +91,14 @@
 
     {% endfor %}
 
+    <!-- 選択した日付にライブ予定を追加する -->
+    {% if selected_day %}
+        <!-- 選択した日付を予定追加画面へ渡す -->
+        <a href="{% url 'live_create' %}?year={{ year }}&month={{ month }}&day={{ selected_day }}">
+            ＋ライブ予定を追加
+        </a>
+    {% endif %}
+
     <!-- ログアウトするためのボタン -->
     <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
