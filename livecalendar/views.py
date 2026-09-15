@@ -73,7 +73,19 @@ def index(request):
             event_date__day=selected_day
         )
     else:
-        selected_schedules = live_schedules
+        selected_schedules = []
+
+    # 今日以降で一番近いライブ予定を1件取得する
+    next_live = LiveSchedule.objects.filter(
+        user=request.user,
+        event_date__gte=today
+    ).order_by("event_date").first()
+
+    # 次のライブまであと何日か計算する
+    if next_live:
+        days_until_live = (next_live.event_date - today).days
+    else:
+        days_until_live = None
 
     # ライブ予定を日付ごとにまとめる
     schedules_by_day = {}
@@ -126,6 +138,10 @@ def index(request):
     # 次の月の情報をHTMLに渡す
     'next_year': next_year,
     'next_month': next_month,
+
+    # 次のライブ情報をHTMLに渡す
+    'next_live': next_live,
+    'days_until_live': days_until_live,
     }
     )
 

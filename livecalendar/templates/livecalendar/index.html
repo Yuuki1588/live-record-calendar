@@ -62,6 +62,43 @@
 
     </table>
 
+    <!-- 今日から一番近いライブ予定を表示する -->
+    {% if next_live %}
+
+        <h2>次のライブ</h2>
+
+
+        <p>
+            {{ next_live.event_date|date:"Y年n月j日" }}
+        </p>
+
+
+        <!-- アーティストが登録されている場合だけ表示する -->
+        {% if next_live.artist %}
+            <h2>{{ next_live.artist }}</h2>
+        {% endif %}
+
+        <!-- 公演名が入力されている場合だけ表示する -->
+        {% if next_live.event_name %}
+            <p>{{ next_live.event_name }}</p>
+        {% elif next_live.festival_name %}
+            <p>{{ next_live.festival_name }}</p>
+        {% endif %}
+
+        <!-- 会場が登録されている場合だけ表示する -->
+        {% if next_live.venue %}
+            <p>📍{{ next_live.venue }}</p>
+        {% endif %}
+
+        <!-- ライブ当日なら「今日！」、それ以外なら「あと○日」と表示する -->
+        {% if days_until_live == 0 %}
+            <p>今日！</p>
+        {% else %}
+            <p>あと{{ days_until_live }}日!</p>
+        {% endif %}
+
+    {% endif %}
+
     <!-- 登録されているライブ予定を表示する -->
     {% if selected_day %}
         <h2>{{ month }}月{{ selected_day }}日のライブ予定</h2>
@@ -74,14 +111,16 @@
 
      <!-- ライブ予定をクリックするとライブ詳細画面へ移動する -->
     <a href="{% url 'live_detail' schedule.id %}">
-        <h3>{{ schedule.event_name }}</h3>
-
-        <p>日付：{{ schedule.event_date|date:"Y年n月j日" }}</p>
-        <p>アーティスト：{{ schedule.artist }}</p>
-        <p>会場：{{ schedule.venue }}</p>
-        <p>開場：{{ schedule.open_time|time:"H:i" }}</p>
-        <p>開演：{{ schedule.start_time|time:"H:i" }}</p>
-
+        
+        <p>{{ schedule.event_date|date:"Y年n月j日" }}</p>
+        <h3>{{ schedule.artist }}</h3>
+         {% if schedule.event_name %}
+            <p>{{ schedule.event_name }}</p>
+        {% elif schedule.festival_name %}
+            <p>{{ schedule.festival_name }}</p>
+        {% endif %}
+        <p>📍{{ schedule.venue }}</p>
+       
     </a>
 
     {% empty %}

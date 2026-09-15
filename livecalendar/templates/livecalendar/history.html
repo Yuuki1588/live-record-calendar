@@ -127,21 +127,48 @@
         <a href="{% url 'history' %}">リセット</a>
 
     </form>
+    <!-- 現在表示されている履歴の件数を表示する -->
+    <p>全{{ records|length }}件</p>
     {% for record in records %}
 
     <div>
         <a href="{% url 'live_detail' record.live_schedule.id %}">
             <p>
-                日付：{{ record.live_schedule.event_date }}
+                
+                {{ record.live_schedule.event_date|date:"Y年n月j日" }}
+
+                <!-- お気に入りの記録の場合だけハートを表示する -->
+                {% if record.is_favorite %}
+                    ❤️
+                {% endif %}
+    
             </p>
 
             <p>
-                アーティスト：{{ record.live_schedule.artist }}
+                {{ record.live_schedule.artist }}
             </p>
 
+            <!-- 公演名が入力されている場合だけ表示する -->
+            {% if record.live_schedule.event_name %}
+                <p>{{ record.live_schedule.event_name }}</p>
+            {% endif %}
+
+            <!-- 対バンアーティストが登録されている場合だけ表示する -->
+            {% for opponent in record.live_schedule.opponentartist_set.all %}
+                <p>w/{{ opponent.artist }}</p>
+            {% endfor %}
+
             <p>
-                会場：{{ record.live_schedule.venue }}
+                📍{{ record.live_schedule.venue }}
             </p>
+            <!-- ライブ記録の感情を表示する -->
+            <p>{{ record.get_emotion_display }}</p>
+            <!-- 登録されている写真の1枚目を表示する -->
+            {% with photo=record.recordphoto_set.first %}
+                {% if photo and photo.photo %}
+                    <img src="{{ photo.photo.url }}" width="200">
+                {% endif %}
+            {% endwith %}
         </a>
 
         <hr>
