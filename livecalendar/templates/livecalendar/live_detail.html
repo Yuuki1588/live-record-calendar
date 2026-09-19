@@ -3,8 +3,13 @@
 
 <body>
 
-    <!-- ライブ詳細画面のタイトル -->
-    <h1>ライブ詳細</h1>
+    
+    <!-- ライブ記録があるかどうかでタイトルを切り替える -->
+    {% if record %}
+        <h1>記録詳細</h1>
+    {% else %}
+        <h1>予定詳細</h1>
+    {% endif %}
 
     
     <!-- ライブ開催日を「2026年8月20日」の形式で表示する -->
@@ -54,13 +59,20 @@
 <!-- ライブ記録がある場合 -->
 {% if record %}
 
-    <h2>ライブ記録</h2>
-
     <p>感情：{{ record.get_emotion_display }}</p>
 
     <p>感想：{{ record.impression }}</p>
 
-    <p>お気に入り：{{ record.is_favorite }}</p>
+    <!-- お気に入りをON/OFFするボタン -->
+    <form method="post" action="{% url 'toggle_favorite' schedule.pk %}">
+        {% csrf_token %}
+
+        {% if record.is_favorite %}
+            <button type="submit">♥お気に入り</button>
+        {% else %}
+            <button type="submit">♡お気に入り</button>
+        {% endif %}
+    </form>
 
     <!-- ライブ記録を編集する -->
     <a href="{% url 'live_record_edit' schedule.pk %}">

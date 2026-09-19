@@ -44,7 +44,7 @@
 
     {% if selected_tab == "year" %}
 
-        <h2>総ライブ回数</h2>
+        <h2>総参戦回数</h2>
         <p>{{ total_live_count }}回</p>
 
         <h2>参戦日数</h2>
@@ -57,25 +57,24 @@
 
     {% if selected_tab == "year" %}
 
-    <h2>年間</h2>
+    <!-- 選択した年によって見出しを切り替える -->
+    {% if selected_year %}
+        <h2>月別参戦回数</h2>
+    {% else %}
+        <h2>年別参戦回数</h2>
+    {% endif %}
+
+    <!-- 月別参戦回数のグラフを表示する場所 -->
+    <canvas id="monthlyChart"></canvas>
 
     {% if selected_year %}
 
-            <!-- 年を選択している場合は月ごとの回数を表示 -->
-            {% for data in monthly_data %}
-                <p>
-                    {{ data.month }}月：{{ data.count }}回
-                </p>
-            {% endfor %}
 
         {% else %}
 
-            <!-- 「すべて」の場合は年ごとの回数を表示 -->
-            {% for data in year_counts %}
-                <p>
-                    {{ data.live_schedule__event_date__year }}年：{{ data.count }}回
-                </p>
-            {% endfor %}
+            <!-- 年別参戦回数のグラフを表示する場所 -->
+            <canvas id="yearlyChart"></canvas>
+
 
         {% endif %}
 
@@ -83,10 +82,11 @@
 
     {% if selected_tab == "artist" %}
 
-        <h2>アーティスト別</h2>
+        <h2>アーティスト別参戦回数　TOP5</h2>
 
         {% for artist in artist_counts %}
             <p>
+                {{ forloop.counter }}
                 {{ artist.live_schedule__artist__artist_name }}
                 ：{{ artist.count }}回
             </p>
@@ -98,10 +98,11 @@
 
     {% if selected_tab == "venue" %}
 
-            <h2>会場別</h2>
+            <h2>会場別参戦回数　TOP5</h2>
 
             {% for venue in venue_counts %}
                 <p>
+                    {{ forloop.counter }}
                     {{ venue.live_schedule__venue__venue_name }}
                     ：{{ venue.count }}回
                 </p>
@@ -110,6 +111,72 @@
         {% endfor %}
 
     {% endif %}
+
+    <!-- グラフを表示するためにChart.jsを読み込む -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if selected_tab == "year" and selected_year %}
+
+<script>
+    // グラフを表示する場所を取得する
+    const ctx = document.getElementById("monthlyChart");
+
+        // 月別参戦回数を棒グラフで表示する
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: [
+                {% for data in monthly_data %}
+                    "{{ data.month }}月",
+                {% endfor %}
+            ],
+            datasets: [{
+                label: "参戦回数",
+                data: [
+                    {% for data in monthly_data %}
+                        {{ data.count }},
+                    {% endfor %}
+                ]
+            }]
+        }
+    });
+</script>
+
+{% endif %}
+
+{% if selected_tab == "year" and not selected_year %}
+
+<script>
+    // 年別参戦回数のグラフを表示する場所を取得する
+    const yearlyCtx = document.getElementById("yearlyChart");
+
+    // 年別参戦回数を棒グラフで表示する
+    new Chart(yearlyCtx, {
+        type: "bar",
+        data: {
+            labels: [
+                {% for data in year_counts %}
+                    "{{ data.live_schedule__event_date__year }}年",
+                {% endfor %}
+            ],
+            datasets: [{
+                label: "参戦回数",
+                data: [
+                    {% for data in year_counts %}
+                        {{ data.count }},
+                    {% endfor %}
+                ]
+            }]
+        },
+
+        // 棒グラフを横向きにする
+        options: {
+            indexAxis: "y"
+        }
+    });
+</script>
+
+{% endif %}
 
 </body>
 

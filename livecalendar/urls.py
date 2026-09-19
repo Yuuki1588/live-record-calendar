@@ -53,4 +53,6 @@ urlpatterns = [
     path("logout/",views.logout_view,name="logout"),
     # ログアウト確認
     path("logout/confirm/",views.logout_confirm,name="logout_confirm"),
+    # ライブ記録のお気に入りをON/OFFするURL
+    path("live/<int:pk>/favorite/",views.toggle_favorite,name="toggle_favorite",),
 ]

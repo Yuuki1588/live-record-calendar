@@ -22,13 +22,13 @@
 
     <!-- 曜日を表示する -->
     <tr>
+        <th>日</th>
         <th>月</th>
         <th>火</th>
         <th>水</th>
         <th>木</th>
         <th>金</th>
         <th>土</th>
-        <th>日</th>
     </tr>
 
     <!-- 1週間ずつ表示する -->
@@ -101,12 +101,11 @@
 
     <!-- 登録されているライブ予定を表示する -->
     {% if selected_day %}
-        <h2>{{ month }}月{{ selected_day }}日のライブ予定</h2>
-    {% else %}
-        <h2>ライブ予定</h2>
+        
     {% endif %}
 
-    
+{% if selected_day %}
+
     {% for schedule in selected_schedules %}
 
      <!-- ライブ予定をクリックするとライブ詳細画面へ移動する -->
@@ -123,12 +122,9 @@
        
     </a>
 
-    {% empty %}
-
-    <!-- ライブ予定が1件もない場合 -->
-    <p>ライブ予定はありません。</p>
 
     {% endfor %}
+{% endif %}
 
     <!-- 選択した日付にライブ予定を追加する -->
     {% if selected_day %}

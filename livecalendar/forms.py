@@ -10,9 +10,11 @@ from django import forms
 # ライブ予定・ライブ記録・記録写真.セットリストのモデルを読み込む
 from .models import LiveSchedule, LiveRecord, RecordPhoto, SetList
 
+from django.forms import modelformset_factory
+
 
 # 新規登録フォームを作成
-class SignUpForm(UserCreationForm):
+class SignupForm(UserCreationForm):
 
     # フォームの設定
     class Meta:
@@ -76,7 +78,14 @@ class LiveRecordForm(forms.ModelForm):
         "emotion",
         "impression",
         "is_favorite",
-    )
+        )
+
+        # 入力項目の表示名を日本語にする
+        labels = {
+            "emotion": "感情",
+            "impression": "感想",
+            "is_favorite": "お気に入り",
+        }
 
 # ライブ記録の写真を追加するフォーム
 class RecordPhotoForm(forms.ModelForm):
@@ -91,6 +100,20 @@ class RecordPhotoForm(forms.ModelForm):
         fields = (
             "photo",
         )
+
+        # 写真の表示名を日本語にする
+        labels = {
+            "photo": "写真",
+        }
+
+# 写真を最大3枚まで入力できるようにする
+RecordPhotoFormSet = modelformset_factory(
+    RecordPhoto,
+    form=RecordPhotoForm,
+    extra=3,
+    max_num=3,
+    validate_max=True,
+)
 
 # セットリストを入力するフォーム
 class SetListForm(forms.ModelForm):
@@ -107,13 +130,17 @@ class SetListForm(forms.ModelForm):
             "song_order",
         )
 
-
-from django.forms import modelformset_factory
+        # セットリストの表示名を日本語にする
+        labels = {
+            "song_name": "曲名",
+            "song_order": "曲順",
+        }
 
 
 # セットリストを複数曲入力できるようにする
 SetListFormSet = modelformset_factory(
     SetList,
     form=SetListForm,
-    extra=5
+    extra=3,
+    can_delete=True
 )
