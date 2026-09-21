@@ -12,6 +12,9 @@ from .models import LiveSchedule, LiveRecord, RecordPhoto, SetList
 
 from django.forms import modelformset_factory
 
+# ファイル入力欄の表示を日本語にするために読み込む
+from django.forms.widgets import ClearableFileInput
+
 
 # 新規登録フォームを作成
 class SignupForm(UserCreationForm):
@@ -87,6 +90,14 @@ class LiveRecordForm(forms.ModelForm):
             "is_favorite": "お気に入り",
         }
 
+
+# 写真選択欄の英語表示を日本語に変更する
+class JapaneseClearableFileInput(ClearableFileInput):
+    initial_text = "現在"
+    input_text = "変更"
+    clear_checkbox_label = "削除"
+
+
 # ライブ記録の写真を追加するフォーム
 class RecordPhotoForm(forms.ModelForm):
 
@@ -104,6 +115,11 @@ class RecordPhotoForm(forms.ModelForm):
         # 写真の表示名を日本語にする
         labels = {
             "photo": "写真",
+        }
+
+        # ファイル選択欄の表示を日本語にする
+        widgets = {
+            "photo": JapaneseClearableFileInput()
         }
 
 # 写真を最大3枚まで入力できるようにする
