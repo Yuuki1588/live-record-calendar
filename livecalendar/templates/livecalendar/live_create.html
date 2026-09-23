@@ -9,10 +9,10 @@
 <body>
 
     <!-- ライブ予定追加画面のタイトル -->
-    <h1>ライブ予定追加</h1>
+    <h1>予定追加</h1>
 
     <!-- ライブ予定を登録するフォーム -->
-    <form method="post">
+    <form method="post" class="live-form">
 
         <!-- 不正なフォーム送信を防ぐため -->
         {% csrf_token %}
@@ -21,13 +21,13 @@
         {{ form.as_p }}
 
         <!-- 入力したライブ予定を登録 -->
-        <button type="submit">登録</button>
+        <button type="submit" class="save-button">登録</button>
 
     </form>
 
     <!-- 登録せずにカレンダーへ戻る -->
     <p>
-        <a href="{% url 'home' %}">カレンダーへ戻る</a>
+        <a href="{% url 'home' %}" class="back-button">カレンダーへ戻る</a>
     </p>
 
 </body>

@@ -7,26 +7,30 @@
 </head>
 
 <body>
+    <!-- プロフィール編集画面全体 -->
+    <div class="profile-edit-container">
+        <h1>プロフィール編集</h1>
 
-    <h1>プロフィール編集</h1>
+        <!-- プロフィールを編集するフォーム -->
+        <form method="post">
+            {% csrf_token %}
 
-    <!-- プロフィールを編集するフォーム -->
-    <form method="post">
-        {% csrf_token %}
+            <!-- ユーザー名入力欄 -->
+        <div class="form-group">
 
-        <label for="username">ユーザー名</label>
+            <label for="username">ユーザー名</label>
 
-        <input
-            type="text"
-            id="username"
-            name="username"
-            value="{{ user.username }}"
-            required
-        >
-
-        <button type="submit">保存</button>
-    </form>
-
+            <input
+                type="text"
+                id="username"
+                name="username"
+                value="{{ user.username }}"
+                required
+            >
+        </div>
+        <button type="submit" class="save-button">保存</button>
+        </form>
+    </div>
 </body>
 
 </html>

@@ -64,6 +64,32 @@
 
     </form>
 
+    <!-- 記録削除の確認モーダルを開くボタン -->
+    <button type="button" id="delete-button" class="delete-button">
+        記録を削除
+    </button>
+
+    <!-- 記録削除の確認モーダル -->
+    <div id="delete-modal" class="delete-modal" style="display: none;">
+
+        <p>記録を削除しますか？</p>
+
+        <!-- 「はい」を押したら記録削除処理へ -->
+        <form method="post" action="{% url 'live_record_delete' schedule.pk %}">
+            {% csrf_token %}
+
+            <button type="submit" class="confirm-button">
+                はい
+            </button>
+        </form>
+
+        <!-- 「いいえ」でモーダルを閉じる -->
+        <button type="button" id="cancel-delete" class="cancel-button">
+            いいえ
+        </button>
+
+    </div>
+
     <!-- 保存せずライブ詳細画面へ戻る -->
     <p>
         <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
@@ -107,6 +133,28 @@
 
             // Djangoにフォームが1つ増えたことを伝える
             totalForms.value = formCount + 1;
+        });
+    </script>
+
+    <!-- 記録削除モーダルを動かす処理 -->
+    <script>
+        // 「記録を削除」ボタンを取得
+        const deleteButton = document.getElementById("delete-button");
+
+        // 削除確認モーダルを取得
+        const deleteModal = document.getElementById("delete-modal");
+
+        // 「いいえ」ボタンを取得
+        const cancelDelete = document.getElementById("cancel-delete");
+
+        // 「記録を削除」を押したらモーダルを表示
+        deleteButton.addEventListener("click", function () {
+            deleteModal.style.display = "block";
+        });
+
+        // 「いいえ」を押したらモーダルを閉じる
+        cancelDelete.addEventListener("click", function () {
+            deleteModal.style.display = "none";
         });
     </script>
 

@@ -11,7 +11,9 @@
         <h1>予定詳細</h1>
     {% endif %}
 
-    
+    <!-- ライブ情報全体 -->
+<div class="live-info">
+
     <!-- ライブ開催日を「2026年8月20日」の形式で表示する -->
     <p>{{ schedule.event_date|date:"Y年n月j日" }}</p>
 
@@ -54,72 +56,92 @@
     {% if schedule.memo %}
         <p>メモ：{{ schedule.memo }}</p>
     {% endif %}
-    
+
+</div>
 
 <!-- ライブ記録がある場合 -->
 {% if record %}
 
-    <p>感情：{{ record.get_emotion_display }}</p>
+    <div class="record-info">
 
-    <p>感想：{{ record.impression }}</p>
+        <p>感情：{{ record.get_emotion_display }}</p>
 
-    <!-- お気に入りをON/OFFするボタン -->
-    <form method="post" action="{% url 'toggle_favorite' schedule.pk %}">
-        {% csrf_token %}
+        <p>感想：{{ record.impression }}</p>
 
-        {% if record.is_favorite %}
-            <button type="submit">♥お気に入り</button>
-        {% else %}
-            <button type="submit">♡お気に入り</button>
-        {% endif %}
-    </form>
+        <!-- お気に入りをON/OFFするボタン -->
+        <form method="post" action="{% url 'toggle_favorite' schedule.pk %}">
+            {% csrf_token %}
 
-    <!-- ライブ記録を編集する -->
-    <a href="{% url 'live_record_edit' schedule.pk %}">
-        記録を編集
-    </a>
+            {% if record.is_favorite %}
+                <button type="submit" class="favorite-button">お気に入り</button>
+            {% else %}
+                <button type="submit" class="favorite-button">♡お気に入り</button>
+            {% endif %}
+        </form>
 
-    <a href="{% url 'live_record_delete' schedule.pk %}">
-        記録を削除
-    </a>
+        <!-- ライブ記録を編集する -->
+        <a href="{% url 'live_record_edit' schedule.pk %}" class="edit-button">
+            記録を編集
+        </a>
 
-{% for photo in record.recordphoto_set.all %}
+    </div>
 
-    {% if photo.photo %}
-        <p>写真：</p>
-        <img src="{{ photo.photo.url }}" width="300">
+
+    <!-- 写真全体 -->
+    <div class="record-photos">
+
+        {% for photo in record.recordphoto_set.all %}
+
+            {% if photo.photo %}
+                <p>写真：</p>
+                <img src="{{ photo.photo.url }}" width="300">
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+            
+    {% if setlists %}
+
+        <!-- セットリスト全体 -->
+        <div class="setlist-info">
+
+            <h2>セットリスト</h2>
+
+            {% for song in setlists %}
+                <p>{{ song.song_order }}. {{ song.song_name }}</p>
+            {% endfor %}
+
+        </div>
+
     {% endif %}
 
-{% endfor %}
-    
-{% if setlists %}
-
-    <h2>セットリスト</h2>
-
-    {% for song in setlists %}
-        <p>{{ song.song_order }}. {{ song.song_name }}</p>
-    {% endfor %}
-
-
-{% endif %}
 <!-- ライブ記録がまだない場合 -->
 {% else %}
 
-    <a href="{% url 'live_record_create' schedule.pk %}">
+    <a href="{% url 'live_record_create' schedule.pk %}" class="add-record-button">
         記録を追加
     </a>
 
 {% endif %}
 
     <br><br>
-    <!-- ライブ予定を削除する -->
-    <a href="{% url 'live_delete' schedule.pk %}">
-        削除
-    </a>
 
-<br><br>
+        <!-- ライブ予定編集画面へ移動する -->
+        <a href="{% url 'live_edit' pk=schedule.pk %}" class="edit-button">
+            編集
+        </a>
+
+        <br><br>
+
+        <!-- ライブ予定を削除する -->
+        <a href="{% url 'live_delete' schedule.pk %}" class="delete-button">
+            削除
+        </a>
+
+    <br><br>
     <!-- カレンダー画面へ戻る -->
-    <a href="{% url 'home' %}">カレンダーへ戻る</a>
+    <a href="{% url 'home' %}" class="back-button">カレンダーへ戻る</a>
 
 </body>
 

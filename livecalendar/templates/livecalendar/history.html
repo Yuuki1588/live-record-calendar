@@ -10,8 +10,8 @@
 
     <h1>ライブ履歴</h1>
 
-    <!-- 履歴の並べ替え -->
-    <form method="get">
+    <!-- 並べ替え・絞り込みエリア -->
+    <form method="get" class="history-filter">
 
     <label for="sort">並べ替え：</label>
 
@@ -129,56 +129,65 @@
     </form>
     <!-- 現在表示されている履歴の件数を表示する -->
     <p>全{{ records|length }}件</p>
-    {% for record in records %}
 
-    <div>
-        <a href="{% url 'live_detail' record.live_schedule.id %}">
-            <p>
-                
-                {{ record.live_schedule.event_date|date:"Y年n月j日" }}
+    <!-- 履歴カード全体をまとめる -->
+    <div class="history-list">
+        {% for record in records %}
 
-                <!-- お気に入りの記録の場合だけハートを表示する -->
-                {% if record.is_favorite %}
-                    ❤️
+        <!-- ライブ履歴1件分のカード -->
+        <div class="history-card">
+            <a href="{% url 'live_detail' record.live_schedule.id %}">
+                <p>
+                    
+                    {{ record.live_schedule.event_date|date:"Y年n月j日" }}
+
+                    <!-- お気に入りの記録の場合だけハートを表示する -->
+                    {% if record.is_favorite %}
+                        ❤️
+                    {% endif %}
+        
+                </p>
+
+                <p>
+                    {{ record.live_schedule.artist }}
+                </p>
+
+                <!-- 公演名が入力されている場合だけ表示する -->
+                {% if record.live_schedule.event_name %}
+                    <p>{{ record.live_schedule.event_name }}</p>
                 {% endif %}
-    
-            </p>
 
-            <p>
-                {{ record.live_schedule.artist }}
-            </p>
+                <!-- 対バンアーティストが登録されている場合だけ表示する -->
+                {% for opponent in record.live_schedule.opponentartist_set.all %}
+                    <p>w/{{ opponent.artist }}</p>
+                {% endfor %}
 
-            <!-- 公演名が入力されている場合だけ表示する -->
-            {% if record.live_schedule.event_name %}
-                <p>{{ record.live_schedule.event_name }}</p>
-            {% endif %}
+                <p>
+                    📍{{ record.live_schedule.venue }}
+                </p>
+                <!-- ライブ記録の感情を表示する -->
+                <p>{{ record.get_emotion_display }}</p>
+                <!-- 登録されている写真の1枚目を表示する -->
+                {% with photo=record.recordphoto_set.first %}
+                    {% if photo and photo.photo %}
+                        <img src="{{ photo.photo.url }}" width="200">
+                    {% endif %}
+                {% endwith %}
+            </a>
 
-            <!-- 対バンアーティストが登録されている場合だけ表示する -->
-            {% for opponent in record.live_schedule.opponentartist_set.all %}
-                <p>w/{{ opponent.artist }}</p>
-            {% endfor %}
+            <hr>
+        
+            
+        </div>
 
-            <p>
-                📍{{ record.live_schedule.venue }}
-            </p>
-            <!-- ライブ記録の感情を表示する -->
-            <p>{{ record.get_emotion_display }}</p>
-            <!-- 登録されている写真の1枚目を表示する -->
-            {% with photo=record.recordphoto_set.first %}
-                {% if photo and photo.photo %}
-                    <img src="{{ photo.photo.url }}" width="200">
-                {% endif %}
-            {% endwith %}
-        </a>
+   
 
-        <hr>
+        {% empty %}
+
+            <p>ライブ記録はまだありません。</p>
+
+        {% endfor %}
     </div>
-
-{% empty %}
-
-    <p>ライブ記録はまだありません。</p>
-
-{% endfor %}
 
 </body>
 

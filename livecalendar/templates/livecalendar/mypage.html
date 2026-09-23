@@ -7,43 +7,54 @@
 </head>
 
 <body>
+    <!-- マイページ全体 -->
+    <div class="mypage-container">
+        <h1>マイページ</h1>
 
-    <h1>マイページ</h1>
+        <!-- プロフィール情報 -->
+        <div class="profile-section">
 
-    <!-- ログイン中のユーザー名を表示する -->
-    <h2>{{ request.user.username }}</h2>
 
-    <!-- プロフィール編集画面へ移動する -->
-    <a href="{% url 'profile_edit' %}">プロフィールを編集</a>
+            <!-- ログイン中のユーザー名を表示する -->
+            <h2>{{ request.user.username }}</h2>
 
-    <!-- お気に入りアーティストを表示する -->
-    <h2>お気に入りアーティスト</h2>
+            <!-- プロフィール編集画面へ移動する -->
+            <a href="{% url 'profile_edit' %}">プロフィールを編集</a>
+        <!-- お気に入りアーティスト -->
+        <div class="favorite-section">
 
-    <!-- お気に入りアーティスト管理画面へ移動する -->
-    <a href="{% url 'favorite_artist_manage' %}">編集</a>
+            <h2>お気に入りアーティスト</h2>
 
-    {% for favorite in favorite_artists %}
-        <p>
-            {{ favorite.artist }}
-        </p>
-    {% empty %}
-        <p>お気に入りアーティストはまだ登録されていません。</p>
-    {% endfor %}
 
-    <a href="{% url 'email_change' %}">
-    メールアドレス変更
-    </a>
+            {% for favorite in favorite_artists %}
+                <p>
+                    {{ favorite.artist }}
+                </p>
+            {% empty %}
+                <p>お気に入りアーティストはまだ登録されていません。</p>
+            {% endfor %}
 
-    <!-- パスワード変更画面へ移動する -->
-    <a href="{% url 'password_change' %}">
-    パスワード変更
-    </a>
+            <!-- お気に入りアーティスト管理画面へ移動する -->
+            <a href="{% url 'favorite_artist_manage' %}">編集</a>
+        </div> 
+                   
+        <!-- アカウント設定 -->
+        <div class="account-settings">
+            <a href="{% url 'email_change' %}">
+            メールアドレス変更
+            </a>
 
-    <!-- ログアウト確認画面へ移動する -->
-    <a href="{% url 'logout_confirm' %}">
-    ログアウト
-    </a>
+            <!-- パスワード変更画面へ移動する -->
+            <a href="{% url 'password_change' %}">
+            パスワード変更
+            </a>
 
+            <!-- ログアウト確認画面へ移動する -->
+            <a href="{% url 'logout_confirm' %}">
+            ログアウト
+            </a>
+        </div> 
+    </div>
 </body>
 
 </html>

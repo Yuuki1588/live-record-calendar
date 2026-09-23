@@ -8,13 +8,17 @@
 
 <body>
 
-    <h1>お気に入りアーティスト管理</h1>
+    <!-- お気に入りアーティスト管理画面全体 -->
+    <div class="favorite-manage-container">
 
-    {% for favorite in favorite_artists %}
+        <h1>お気に入りアーティスト管理</h1>
 
-        <p>
-            {{ favorite.artist }}
+        {% for favorite in favorite_artists %}
 
+            <!-- お気に入りアーティスト1件 -->
+        <div class="favorite-item">
+
+            <span>{{ favorite.artist }}</span>
             <!-- お気に入りアーティストを削除する -->
             <form
                 method="post"
@@ -22,20 +26,20 @@
             >
                 {% csrf_token %}
 
-                <button type="submit">削除</button>
+                <button type="submit" class="delete-button">削除</button>
             </form>
-        </p>
+        </div>
 
-    {% empty %}
+        {% empty %}
 
-        <p>お気に入りアーティストはまだ登録されていません。</p>
+            <p class="empty-message">お気に入りアーティストはまだ登録されていません。</p>
 
-    {% endfor %}
+        {% endfor %}
 
-    <a href="{% url 'favorite_artist_add' %}">
-        ＋ アーティストを追加
-    </a>
-
+        <a href="{% url 'favorite_artist_add' %}" class="add-button">
+            ＋ アーティストを追加
+        </a>
+    </div>
 </body>
 
 </html>

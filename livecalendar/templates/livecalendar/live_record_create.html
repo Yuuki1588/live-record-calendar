@@ -42,16 +42,15 @@
         </div>
 
         <!-- セットリストの入力欄を追加するボタン -->
-        <button type="button" id="add-song">＋ 曲を追加</button>
-
+        <button type="button" id="add-song" class="add-button">＋ 曲を追加</button>
         <!-- 入力した記録を保存する -->
-        <button type="submit">記録を保存</button>
+        <button type="submit" class="save-button">記録を保存</button>
     </form>
 
     <br>
 
     <!-- ライブ詳細画面へ戻る -->
-    <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
+    <a href="{% url 'live_detail' schedule_id=schedule.pk %}" class="back-button">
         キャンセル
     </a>
 
