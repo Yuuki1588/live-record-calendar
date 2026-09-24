@@ -19,7 +19,9 @@
             <h2>{{ request.user.username }}</h2>
 
             <!-- プロフィール編集画面へ移動する -->
-            <a href="{% url 'profile_edit' %}">プロフィールを編集</a>
+            <a href="{% url 'profile_edit' %}" class="edit-button">
+                プロフィールを編集
+            </a>
         <!-- お気に入りアーティスト -->
         <div class="favorite-section">
 
@@ -35,22 +37,24 @@
             {% endfor %}
 
             <!-- お気に入りアーティスト管理画面へ移動する -->
-            <a href="{% url 'favorite_artist_manage' %}">編集</a>
+            <a href="{% url 'favorite_artist_manage' %}" class="edit-button">
+                編集
+            </a>
         </div> 
                    
         <!-- アカウント設定 -->
         <div class="account-settings">
-            <a href="{% url 'email_change' %}">
+            <a href="{% url 'email_change' %}" class="settings-link">
             メールアドレス変更
             </a>
 
             <!-- パスワード変更画面へ移動する -->
-            <a href="{% url 'password_change' %}">
+            <a href="{% url 'password_change' %}" class="settings-link">
             パスワード変更
             </a>
 
             <!-- ログアウト確認画面へ移動する -->
-            <a href="{% url 'logout_confirm' %}">
+            <a href="{% url 'logout_confirm' %}" class="settings-link">
             ログアウト
             </a>
         </div> 

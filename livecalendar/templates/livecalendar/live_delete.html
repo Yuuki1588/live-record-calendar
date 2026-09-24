@@ -7,25 +7,27 @@
 </head>
 
 <body>
+    <!-- ライブ予定削除画面全体 -->
+    <div class="live-delete-container">
+        <!-- 削除確認画面のタイトル -->
+        <h1>予定削除</h1>
 
-    <!-- 削除確認画面のタイトル -->
-    <h1>予定削除</h1>
+        <!-- 削除するライブ名を表示 -->
+        <p>
+            「{{ schedule.event_name }}」を本当に削除しますか？
+        </p>
 
-    <!-- 削除するライブ名を表示 -->
-    <p>
-        「{{ schedule.event_name }}」を本当に削除しますか？
-    </p>
+        <!-- 削除ボタン -->
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="delete-button">削除する</button>
+        </form>
 
-    <!-- 削除ボタン -->
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">削除する</button>
-    </form>
-
-    <!-- 削除をやめてライブ詳細画面へ戻る -->
-    <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
-        キャンセル
-    </a>
+        <!-- 削除をやめてライブ詳細画面へ戻る -->
+        <a href="{% url 'live_detail' schedule_id=schedule.pk %}" class="back-button">
+            キャンセル
+        </a>
+    </div>  
 </body>
 
 </html>

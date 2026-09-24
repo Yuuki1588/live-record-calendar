@@ -7,157 +7,164 @@
 </head>
 
 <body>
+    <!-- ライブ記録編集画面全体 -->
+    <div class="record-edit-container">
 
-    <h1>ライブ記録編集</h1>
+        <h1>ライブ記録編集</h1>
 
-    <!-- ライブ名を表示 -->
-    <h2>{{ schedule }}</h2>
+        <!-- ライブ名を表示 -->
+        <h2>{{ schedule }}</h2>
 
-    <!-- ライブ記録編集フォーム -->
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <!-- 感情・感想・お気に入り -->
-        {{ form.as_p }}
-
-        <!-- 写真フォームセットの管理情報 -->
-        {{ photo_formset.management_form }}
-
-        <!-- 写真を最大3枚表示する -->
-        {% for photo_form in photo_formset %}
-            {{ photo_form.as_p }}
-        {% endfor %}
-
-        <h2>セットリスト</h2>
-
-        <!-- セットリストの管理情報 -->
-        {{ setlist_formset.management_form }}
-
-        <!-- セットリストの入力欄をまとめる -->
-        <div id="setlist-forms">
-            {% for setlist_form in setlist_formset %}
-                <div class="setlist-form">
-                    <p>
-                        曲名：{{ setlist_form.song_name }}
-                    </p>
-
-                    <p>
-                        曲順：{{ setlist_form.song_order }}
-                    </p>
-
-                    {% if setlist_form.instance.pk %}
-                    <p>
-                        削除：{{ setlist_form.DELETE }}
-                    </p>
-                    {% endif %}
-
-                    {{ setlist_form.id }}
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- セットリストの入力欄を追加するボタン -->
-        <button type="button" id="add-song">＋ 曲を追加</button>
-
-                <!-- 編集内容を保存する -->
-        <button type="submit">変更を保存</button>
-
-    </form>
-
-    <!-- 記録削除の確認モーダルを開くボタン -->
-    <button type="button" id="delete-button" class="delete-button">
-        記録を削除
-    </button>
-
-    <!-- 記録削除の確認モーダル -->
-    <div id="delete-modal" class="delete-modal" style="display: none;">
-
-        <p>記録を削除しますか？</p>
-
-        <!-- 「はい」を押したら記録削除処理へ -->
-        <form method="post" action="{% url 'live_record_delete' schedule.pk %}">
+        <!-- ライブ記録編集フォーム -->
+        <form method="post" enctype="multipart/form-data" class="record-form">
             {% csrf_token %}
 
-            <button type="submit" class="confirm-button">
-                はい
-            </button>
+            <!-- 感情・感想・お気に入り -->
+            {{ form.as_p }}
+        <!-- 写真入力欄 -->
+        <div class="record-photos">
+
+            <!-- 写真フォームセットの管理情報 -->
+            {{ photo_formset.management_form }}
+
+            <!-- 写真を最大3枚表示する -->
+            {% for photo_form in photo_formset %}
+                {{ photo_form.as_p }}
+            {% endfor %}
+        </div>
+        <!-- セットリスト全体 -->
+        <div class="setlist-section">
+            
+            <h2>セットリスト</h2>
+
+            <!-- セットリストの管理情報 -->
+            {{ setlist_formset.management_form }}
+
+            <!-- セットリストの入力欄をまとめる -->
+            <div id="setlist-forms">
+                {% for setlist_form in setlist_formset %}
+                    <div class="setlist-form">
+                        <p>
+                            曲名：{{ setlist_form.song_name }}
+                        </p>
+
+                        <p>
+                            曲順：{{ setlist_form.song_order }}
+                        </p>
+
+                        {% if setlist_form.instance.pk %}
+                        <p>
+                            削除：{{ setlist_form.DELETE }}
+                        </p>
+                        {% endif %}
+
+                        {{ setlist_form.id }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- セットリストの入力欄を追加するボタン -->
+            <button type="button" id="add-song" class="add-song-button">＋ 曲を追加</button>
+        </div>
+            <!-- 編集内容を保存する -->
+            <button type="submit" class="save-button">変更を保存</button>
+        
         </form>
 
-        <!-- 「いいえ」でモーダルを閉じる -->
-        <button type="button" id="cancel-delete" class="cancel-button">
-            いいえ
+        <!-- 記録削除の確認モーダルを開くボタン -->
+        <button type="button" id="delete-button" class="delete-button">
+            記録を削除
         </button>
 
-    </div>
+        <!-- 記録削除の確認モーダル -->
+        <div id="delete-modal" class="delete-modal" style="display: none;">
 
-    <!-- 保存せずライブ詳細画面へ戻る -->
-    <p>
-        <a href="{% url 'live_detail' schedule_id=schedule.pk %}">
-            キャンセル
-        </a>
-    </p>
+            <p>記録を削除しますか？</p>
 
-    <script>
-        // 「＋ 曲を追加」ボタンを取得する
-        const addSongButton = document.getElementById("add-song");
+            <!-- 「はい」を押したら記録削除処理へ -->
+            <form method="post" action="{% url 'live_record_delete' schedule.pk %}">
+                {% csrf_token %}
 
-        // セットリストの入力欄をまとめている場所を取得する
-        const setlistForms = document.getElementById("setlist-forms");
+                <button type="submit" class="confirm-button">
+                    はい
+                </button>
+            </form>
 
-        // 現在のフォーム数を管理しているDjangoの項目を取得する
-        const totalForms = document.getElementById("id_setlist-TOTAL_FORMS");
+            <!-- 「いいえ」でモーダルを閉じる -->
+            <button type="button" id="cancel-delete" class="cancel-button">
+                いいえ
+            </button>
 
-        // 「＋ 曲を追加」が押されたときの処理
-        addSongButton.addEventListener("click", function () {
+        </div>
 
-            // 現在表示されている最後のセットリスト入力欄をコピーする
-            const forms = document.querySelectorAll(".setlist-form");
-            const newForm = forms[forms.length - 1].cloneNode(true);
+        <!-- 保存せずライブ詳細画面へ戻る -->
+        <p>
+            <a href="{% url 'live_detail' schedule_id=schedule.pk %}" class="back-button">
+                キャンセル
+            </a>
+        </p>
 
-            // 現在のフォーム数を取得する
-            const formCount = parseInt(totalForms.value);
+        <script>
+            // 「＋ 曲を追加」ボタンを取得する
+            const addSongButton = document.getElementById("add-song");
 
-            // コピーしたフォームの番号を新しい番号に変更する
-            newForm.innerHTML = newForm.innerHTML.replaceAll(
-                `setlist-${formCount - 1}`,
-                `setlist-${formCount}`
-            );
+            // セットリストの入力欄をまとめている場所を取得する
+            const setlistForms = document.getElementById("setlist-forms");
 
-            // コピーされた入力内容を空にする
-            newForm.querySelectorAll("input").forEach(function (input) {
-                input.value = "";
+            // 現在のフォーム数を管理しているDjangoの項目を取得する
+            const totalForms = document.getElementById("id_setlist-TOTAL_FORMS");
+
+            // 「＋ 曲を追加」が押されたときの処理
+            addSongButton.addEventListener("click", function () {
+
+                // 現在表示されている最後のセットリスト入力欄をコピーする
+                const forms = document.querySelectorAll(".setlist-form");
+                const newForm = forms[forms.length - 1].cloneNode(true);
+
+                // 現在のフォーム数を取得する
+                const formCount = parseInt(totalForms.value);
+
+                // コピーしたフォームの番号を新しい番号に変更する
+                newForm.innerHTML = newForm.innerHTML.replaceAll(
+                    `setlist-${formCount - 1}`,
+                    `setlist-${formCount}`
+                );
+
+                // コピーされた入力内容を空にする
+                newForm.querySelectorAll("input").forEach(function (input) {
+                    input.value = "";
+                });
+
+                // 新しい入力欄を追加する
+                setlistForms.appendChild(newForm);
+
+                // Djangoにフォームが1つ増えたことを伝える
+                totalForms.value = formCount + 1;
+            });
+        </script>
+
+        <!-- 記録削除モーダルを動かす処理 -->
+        <script>
+            // 「記録を削除」ボタンを取得
+            const deleteButton = document.getElementById("delete-button");
+
+            // 削除確認モーダルを取得
+            const deleteModal = document.getElementById("delete-modal");
+
+            // 「いいえ」ボタンを取得
+            const cancelDelete = document.getElementById("cancel-delete");
+
+            // 「記録を削除」を押したらモーダルを表示
+            deleteButton.addEventListener("click", function () {
+                deleteModal.style.display = "block";
             });
 
-            // 新しい入力欄を追加する
-            setlistForms.appendChild(newForm);
-
-            // Djangoにフォームが1つ増えたことを伝える
-            totalForms.value = formCount + 1;
-        });
-    </script>
-
-    <!-- 記録削除モーダルを動かす処理 -->
-    <script>
-        // 「記録を削除」ボタンを取得
-        const deleteButton = document.getElementById("delete-button");
-
-        // 削除確認モーダルを取得
-        const deleteModal = document.getElementById("delete-modal");
-
-        // 「いいえ」ボタンを取得
-        const cancelDelete = document.getElementById("cancel-delete");
-
-        // 「記録を削除」を押したらモーダルを表示
-        deleteButton.addEventListener("click", function () {
-            deleteModal.style.display = "block";
-        });
-
-        // 「いいえ」を押したらモーダルを閉じる
-        cancelDelete.addEventListener("click", function () {
-            deleteModal.style.display = "none";
-        });
-    </script>
-
+            // 「いいえ」を押したらモーダルを閉じる
+            cancelDelete.addEventListener("click", function () {
+                deleteModal.style.display = "none";
+            });
+        </script>
+    </div>
 </body>
 
 </html>

@@ -7,29 +7,31 @@
 </head>
 
 <body>
+    <!-- ライブ予定追加画面全体 -->
+    <div class="live-create-container">
 
-    <!-- ライブ予定追加画面のタイトル -->
-    <h1>予定追加</h1>
+        <!-- ライブ予定追加画面のタイトル -->
+        <h1>予定追加</h1>
 
-    <!-- ライブ予定を登録するフォーム -->
-    <form method="post" class="live-form">
+        <!-- ライブ予定を登録するフォーム -->
+        <form method="post" class="live-form">
 
-        <!-- 不正なフォーム送信を防ぐため -->
-        {% csrf_token %}
+            <!-- 不正なフォーム送信を防ぐため -->
+            {% csrf_token %}
 
-        <!-- forms.pyで作ったLiveScheduleFormを表示 -->
-        {{ form.as_p }}
+            <!-- forms.pyで作ったLiveScheduleFormを表示 -->
+            {{ form.as_p }}
 
-        <!-- 入力したライブ予定を登録 -->
-        <button type="submit" class="save-button">登録</button>
+            <!-- 入力したライブ予定を登録 -->
+            <button type="submit" class="save-button">登録</button>
 
-    </form>
+        </form>
 
-    <!-- 登録せずにカレンダーへ戻る -->
-    <p>
-        <a href="{% url 'home' %}" class="back-button">カレンダーへ戻る</a>
-    </p>
-
+        <!-- 登録せずにカレンダーへ戻る -->
+        <p>
+            <a href="{% url 'home' %}" class="back-button">カレンダーへ戻る</a>
+        </p>
+    </div>
 </body>
 
 </html>

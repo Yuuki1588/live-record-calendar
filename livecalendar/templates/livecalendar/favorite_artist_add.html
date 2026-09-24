@@ -8,27 +8,36 @@
 
 <body>
 
-    <h1>お気に入りアーティスト追加</h1>
+    <!-- お気に入りアーティスト追加画面全体 -->
+    <div class="favorite-add-container">
 
-    <!-- お気に入りに追加するアーティストを選択する -->
-    <form method="post">
-        {% csrf_token %}
+        <h1>お気に入りアーティスト追加</h1>
 
-        <label for="artist">アーティスト</label>
+        <!-- お気に入りに追加するアーティストを選択する -->
+        <form method="post">
+            {% csrf_token %}
 
-        <select name="artist" id="artist" required>
+        <!-- アーティスト選択欄 -->
+        <div class="form-group">
 
-            {% for artist in artists %}
-                <option value="{{ artist.id }}">
-                    {{ artist.artist_name }}
-                </option>
-            {% endfor %}
 
-        </select>
+            <label for="artist">アーティスト</label>
 
-        <button type="submit">追加</button>
+            <select name="artist" id="artist" required>
 
-    </form>
+                {% for artist in artists %}
+                    <option value="{{ artist.id }}">
+                        {{ artist.artist_name }}
+                    </option>
+                {% endfor %}
+
+            </select>
+        </div>
+
+            <button type="submit" class="add-button">追加</button>
+
+        </form>
+    </div>
 
 </body>
 

@@ -6,139 +6,146 @@
 </head>
 <body>
 
-    <h1>ライブ記録カレンダー</h1>
+    <!-- カレンダー画面全体 -->
+    <div class="calendar-container">
+        <h1>ライブ記録カレンダー</h1>
 
-    <!-- 前の月・現在の月・次の月を表示する -->
-    <h2>
-    <a href="?year={{ prev_year }}&month={{ prev_month }}">＜</a>
+        <!-- 前の月・現在の月・次の月を表示する -->
+        <h2 class="calendar-header">
+        <a href="?year={{ prev_year }}&month={{ prev_month }}">＜</a>
 
-    {{ year }}年{{ month }}月
+        {{ year }}年{{ month }}月
 
-    <a href="?year={{ next_year }}&month={{ next_month }}">＞</a>
-    </h2>
+        <a href="?year={{ next_year }}&month={{ next_month }}">＞</a>
+        </h2>
 
-    <!-- 月間カレンダーを表示する -->
-    <table border="1">
+        <!-- 月間カレンダーを表示する -->
+        <table class="calendar-table">
 
-    <!-- 曜日を表示する -->
-    <tr>
-        <th>日</th>
-        <th>月</th>
-        <th>火</th>
-        <th>水</th>
-        <th>木</th>
-        <th>金</th>
-        <th>土</th>
-    </tr>
+        <!-- 曜日を表示する -->
+        <tr>
+            <th>日</th>
+            <th>月</th>
+            <th>火</th>
+            <th>水</th>
+            <th>木</th>
+            <th>金</th>
+            <th>土</th>
+        </tr>
 
-    <!-- 1週間ずつ表示する -->
-    {% for week in calendar_data %}
-    <tr>
+        <!-- 1週間ずつ表示する -->
+        {% for week in calendar_data %}
+        <tr>
 
-        <!-- 1週間の中を1日ずつ表示する -->
-        {% for day_data in week %}
-        <td>
+            <!-- 1週間の中を1日ずつ表示する -->
+            {% for day_data in week %}
+            <td class="calendar-day">
 
-            {% if day_data.day != 0 %}
+                {% if day_data.day != 0 %}
 
-            <!-- 日付をクリックすると、その日を選択できる -->
-            <a href="?year={{ year }}&month={{ month }}&day={{ day_data.day }}">
-                {{ day_data.day }}
-            </a>
+                <!-- 日付をクリックすると、その日を選択できる -->
+                <a href="?year={{ year }}&month={{ month }}&day={{ day_data.day }}"
+                    class="calendar-date">
+                    {{ day_data.day }}
+                </a>
 
-            <!-- この日にライブ予定がある場合だけ表示する -->
-            {% if day_data.schedules %}
-                <br>
-                LIVE
-            {% endif %}
+                <!-- この日にライブ予定がある場合だけ表示する -->
+                {% if day_data.schedules %}
+                    <div class="live-marker">
+                        LIVE
+                    </div>
+                {% endif %}
 
-            {% endif %}
+                {% endif %}
 
-        </td>
+            </td>
+            {% endfor %}
+
+        </tr>
         {% endfor %}
 
-    </tr>
-    {% endfor %}
+        </table>
 
-    </table>
+        <!-- 今日から一番近いライブ予定を表示する -->
+        {% if next_live %}
+            <!-- 次のライブ情報 -->
+            <div class="next-live-card">
 
-    <!-- 今日から一番近いライブ予定を表示する -->
-    {% if next_live %}
-
-        <h2>次のライブ</h2>
-
-
-        <p>
-            {{ next_live.event_date|date:"Y年n月j日" }}
-        </p>
+                <h2>次のライブ</h2>
 
 
-        <!-- アーティストが登録されている場合だけ表示する -->
-        {% if next_live.artist %}
-            <h2>{{ next_live.artist }}</h2>
+                <p>
+                    {{ next_live.event_date|date:"Y年n月j日" }}
+                </p>
+
+
+                <!-- アーティストが登録されている場合だけ表示する -->
+                {% if next_live.artist %}
+                    <h2>{{ next_live.artist }}</h2>
+                {% endif %}
+
+                <!-- 公演名が入力されている場合だけ表示する -->
+                {% if next_live.event_name %}
+                    <p>{{ next_live.event_name }}</p>
+                {% elif next_live.festival_name %}
+                    <p>{{ next_live.festival_name }}</p>
+                {% endif %}
+
+                <!-- 会場が登録されている場合だけ表示する -->
+                {% if next_live.venue %}
+                    <p>📍{{ next_live.venue }}</p>
+                {% endif %}
+
+                <!-- ライブ当日なら「今日！」、それ以外なら「あと○日」と表示する -->
+                {% if days_until_live == 0 %}
+                    <p>今日！</p>
+                {% else %}
+                    <p>あと{{ days_until_live }}日!</p>
+                {% endif %}
+            </div>
         {% endif %}
 
-        <!-- 公演名が入力されている場合だけ表示する -->
-        {% if next_live.event_name %}
-            <p>{{ next_live.event_name }}</p>
-        {% elif next_live.festival_name %}
-            <p>{{ next_live.festival_name }}</p>
+        <!-- 登録されているライブ予定を表示する -->
+        {% if selected_day %}
+            
         {% endif %}
 
-        <!-- 会場が登録されている場合だけ表示する -->
-        {% if next_live.venue %}
-            <p>📍{{ next_live.venue }}</p>
-        {% endif %}
-
-        <!-- ライブ当日なら「今日！」、それ以外なら「あと○日」と表示する -->
-        {% if days_until_live == 0 %}
-            <p>今日！</p>
-        {% else %}
-            <p>あと{{ days_until_live }}日!</p>
-        {% endif %}
-
-    {% endif %}
-
-    <!-- 登録されているライブ予定を表示する -->
     {% if selected_day %}
+
+        {% for schedule in selected_schedules %}
+
+        <!-- ライブ予定をクリックするとライブ詳細画面へ移動する -->
+        <a href="{% url 'live_detail' schedule.id %}" class="schedule-card">
+            
+            <p>{{ schedule.event_date|date:"Y年n月j日" }}</p>
+            <h3>{{ schedule.artist }}</h3>
+            {% if schedule.event_name %}
+                <p>{{ schedule.event_name }}</p>
+            {% elif schedule.festival_name %}
+                <p>{{ schedule.festival_name }}</p>
+            {% endif %}
+            <p>📍{{ schedule.venue }}</p>
         
-    {% endif %}
-
-{% if selected_day %}
-
-    {% for schedule in selected_schedules %}
-
-     <!-- ライブ予定をクリックするとライブ詳細画面へ移動する -->
-    <a href="{% url 'live_detail' schedule.id %}">
-        
-        <p>{{ schedule.event_date|date:"Y年n月j日" }}</p>
-        <h3>{{ schedule.artist }}</h3>
-         {% if schedule.event_name %}
-            <p>{{ schedule.event_name }}</p>
-        {% elif schedule.festival_name %}
-            <p>{{ schedule.festival_name }}</p>
-        {% endif %}
-        <p>📍{{ schedule.venue }}</p>
-       
-    </a>
-
-
-    {% endfor %}
-{% endif %}
-
-    <!-- 選択した日付にライブ予定を追加する -->
-    {% if selected_day %}
-        <!-- 選択した日付を予定追加画面へ渡す -->
-        <a href="{% url 'live_create' %}?year={{ year }}&month={{ month }}&day={{ selected_day }}">
-            ＋ライブ予定を追加
         </a>
+
+
+        {% endfor %}
     {% endif %}
 
-    <!-- ログアウトするためのボタン -->
-    <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">ログアウト</button>
-    </form>
+        <!-- 選択した日付にライブ予定を追加する -->
+        {% if selected_day %}
+            <!-- 選択した日付を予定追加画面へ渡す -->
+            <a href="{% url 'live_create' %}?year={{ year }}&month={{ month }}&day={{ selected_day }}"
+                class="add-live-button">
+                    ＋ライブ予定を追加
+            </a>
+        {% endif %}
 
+        <!-- ログアウトするためのボタン -->
+        <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit">ログアウト</button>
+        </form>
+    </div>
 </body>
 </html>

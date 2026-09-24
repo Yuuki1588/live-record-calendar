@@ -7,21 +7,25 @@
 </head>
 
 <body>
+    <!-- ログアウト確認画面全体 -->
+    <div class="logout-container">
 
-    <h1>ログアウト</h1>
+        <h1>ログアウト</h1>
 
-    <p>ログアウトしますか？</p>
+        <p>ログアウトしますか？</p>
 
-    <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">はい</button>
+        <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <!-- ログアウトを実行するボタン -->
+        <button type="submit" class="logout-button">はい</button>
 
-    <a href="{% url 'mypage' %}">
-        <button type="button">いいえ</button>
-    </a>
+        <a href="{% url 'mypage' %}">
+        <!-- ログアウトせずマイページに戻るボタン -->
+        <button type="button" class="cancel-button">いいえ</button>
+        </a>
 
-</form>
-
+        </form>
+    </div>
 
 </body>
 

@@ -8,80 +8,83 @@
 
 <body>
 
-    <!-- ライブ予定編集画面のタイトル -->
-    <h1>予定編集</h1>
+    <!-- ライブ予定編集画面全体 -->
+    <div class="live-edit-container">
 
-    <!-- ライブ予定を編集するフォーム -->
-    <form method="post">
+        <!-- ライブ予定編集画面のタイトル -->
+        <h1>予定編集</h1>
 
-        <!-- 不正なフォーム送信を防ぐため -->
-        {% csrf_token %}
+        <!-- ライブ予定を編集するフォーム -->
+        <form method="post" class="live-form">
 
-        <!-- 現在登録されているライブ情報を表示 -->
-        {{ form.as_p }}
-
-        <!-- 編集内容を保存する -->
-        <button type="submit" class="save-button">保存</button>
-
-    </form>
-
-        <!-- 削除確認モーダルを開くボタン -->
-        <button type="button" id="delete-button" class="delete-button">
-            削除
-        </button>
-
-    <!-- 削除確認モーダル -->
-    <div id="delete-modal" class="delete-modal" style="display: none;">
-
-        <p>予定を削除しますか？</p>
-
-        <!-- 「はい」を押したら削除処理へ -->
-        <form method="post" action="{% url 'live_delete' schedule.pk %}">
+            <!-- 不正なフォーム送信を防ぐため -->
             {% csrf_token %}
-            <!-- 「はい」ボタン -->
-            <button type="submit" class="confirm-button">はい</button>
+
+            <!-- 現在登録されているライブ情報を表示 -->
+            {{ form.as_p }}
+
+            <!-- 編集内容を保存する -->
+            <button type="submit" class="save-button">保存</button>
+
         </form>
 
-        <!-- 「いいえ」でモーダルを閉じる -->
-        <!-- 「いいえ」ボタン -->
-        <button type="button" id="cancel-delete" class="cancel-button">いいえ</button>
+            <!-- 削除確認モーダルを開くボタン -->
+            <button type="button" id="delete-button" class="delete-button">
+                削除
+            </button>
 
+        <!-- 削除確認モーダル -->
+        <div id="delete-modal" class="delete-modal" style="display: none;">
+
+            <p>予定を削除しますか？</p>
+
+            <!-- 「はい」を押したら削除処理へ -->
+            <form method="post" action="{% url 'live_delete' schedule.pk %}">
+                {% csrf_token %}
+                <!-- 「はい」ボタン -->
+                <button type="submit" class="confirm-button">はい</button>
+            </form>
+
+            <!-- 「いいえ」でモーダルを閉じる -->
+            <!-- 「いいえ」ボタン -->
+            <button type="button" id="cancel-delete" class="cancel-button">いいえ</button>
+
+        </div>
+
+        <!-- ライブ詳細画面へ戻る -->
+        <div class="back-area">
+            <a href="{% url 'live_detail' schedule.pk %}" class="back-button">
+                ライブ詳細へ戻る
+            </a>
+        </div>
+
+
+        <!-- 削除確認モーダルを動かす処理 -->
+        <script>
+
+            // 削除ボタンを取得
+            const deleteButton = document.getElementById("delete-button");
+
+            // 削除確認モーダルを取得
+            const deleteModal = document.getElementById("delete-modal");
+
+            // 「いいえ」ボタンを取得
+            const cancelDelete = document.getElementById("cancel-delete");
+
+
+            // 削除ボタンを押したらモーダルを表示
+            deleteButton.addEventListener("click", function () {
+                deleteModal.style.display = "block";
+            });
+
+
+            // 「いいえ」を押したらモーダルを閉じる
+            cancelDelete.addEventListener("click", function () {
+                deleteModal.style.display = "none";
+            });
+
+        </script>
     </div>
-
-    <!-- ライブ詳細画面へ戻る -->
-    <p>
-        <a href="{% url 'live_detail' schedule.pk %}" class="back-button">
-            ライブ詳細へ戻る
-        </a>
-    </p>
-
-
-    <!-- 削除確認モーダルを動かす処理 -->
-    <script>
-
-        // 削除ボタンを取得
-        const deleteButton = document.getElementById("delete-button");
-
-        // 削除確認モーダルを取得
-        const deleteModal = document.getElementById("delete-modal");
-
-        // 「いいえ」ボタンを取得
-        const cancelDelete = document.getElementById("cancel-delete");
-
-
-        // 削除ボタンを押したらモーダルを表示
-        deleteButton.addEventListener("click", function () {
-            deleteModal.style.display = "block";
-        });
-
-
-        // 「いいえ」を押したらモーダルを閉じる
-        cancelDelete.addEventListener("click", function () {
-            deleteModal.style.display = "none";
-        });
-
-    </script>
-
 </body>
 
 </html>
