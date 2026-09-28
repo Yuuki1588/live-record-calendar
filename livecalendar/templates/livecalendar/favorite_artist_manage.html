@@ -23,6 +23,7 @@
             <form
                 method="post"
                 action="{% url 'favorite_artist_delete' favorite.id %}"
+                class="delete-form"
             >
                 {% csrf_token %}
 

@@ -25,15 +25,17 @@
             <!-- 不正なフォーム送信を防ぐためのセキュリティ機能 -->
             {% csrf_token %}
 
-            <!-- forms.pyで作成した新規登録フォームを表示する -->
-            {{ form.as_p }}
+            
+            <!-- 新規登録フォームの入力欄全体 -->
+            <div class="signup-form-fields">
+                {{ form.as_p }}
+            </div>
 
             <!-- 入力した内容を送信する登録ボタン -->
             <button type="submit" class="signup-button">登録</button>
 
         </form>
 
-        <a href="/login/" class="back-link">ログイン画面へ戻る</a>
-   </div>
+        <a href="{% url 'login' %}" class="back-link">ログイン画面へ戻る</a>
 </body>
 </html>

@@ -19,7 +19,10 @@
         <form method="POST" enctype="multipart/form-data" class="record-form">
             {% csrf_token %}
 
-            {{ form.as_p }}
+            <!-- 現在登録されているライブ情報を表示 -->
+            <div class="live-form-fields">
+                {{ form.as_p }}
+            </div>
 
             <!-- 写真入力欄 -->
             <div class="record-photos">

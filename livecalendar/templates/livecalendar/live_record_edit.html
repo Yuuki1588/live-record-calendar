@@ -10,7 +10,7 @@
     <!-- ライブ記録編集画面全体 -->
     <div class="record-edit-container">
 
-        <h1>ライブ記録編集</h1>
+        <h1>記録編集</h1>
 
         <!-- ライブ名を表示 -->
         <h2>{{ schedule }}</h2>
@@ -19,8 +19,11 @@
         <form method="post" enctype="multipart/form-data" class="record-form">
             {% csrf_token %}
 
-            <!-- 感情・感想・お気に入り -->
+        <!-- ライブ記録フォームの入力欄全体 -->
+        <div class="record-form-fields">
             {{ form.as_p }}
+        </div>
+
         <!-- 写真入力欄 -->
         <div class="record-photos">
 

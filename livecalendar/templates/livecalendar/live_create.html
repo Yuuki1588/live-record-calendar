@@ -19,8 +19,10 @@
             <!-- 不正なフォーム送信を防ぐため -->
             {% csrf_token %}
 
-            <!-- forms.pyで作ったLiveScheduleFormを表示 -->
-            {{ form.as_p }}
+            <!-- ライブ予定追加フォームの入力欄全体 -->
+            <div class="live-form-fields">
+                {{ form.as_p }}
+            </div>
 
             <!-- 入力したライブ予定を登録 -->
             <button type="submit" class="save-button">登録</button>

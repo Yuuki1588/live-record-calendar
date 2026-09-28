@@ -15,15 +15,18 @@
         <p>ログアウトしますか？</p>
 
         <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <!-- ログアウトを実行するボタン -->
-        <button type="submit" class="logout-button">はい</button>
+            {% csrf_token %}
+            <!-- ログアウト確認ボタンをまとめる -->
+            <div class="logout-actions">
 
-        <a href="{% url 'mypage' %}">
-        <!-- ログアウトせずマイページに戻るボタン -->
-        <button type="button" class="cancel-button">いいえ</button>
-        </a>
+                <!-- ログアウトを実行するボタン -->
+                <button type="submit" class="logout-button">はい</button>
 
+                <a href="{% url 'mypage' %}">
+                <!-- ログアウトせずマイページに戻るボタン -->
+                <button type="button" class="cancel-button">いいえ</button>
+                </a>
+            </div>
         </form>
     </div>
 
