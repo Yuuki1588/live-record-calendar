@@ -1,3 +1,4 @@
+{% load date_filters %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -75,7 +76,7 @@
 
 
                 <p>
-                    {{ next_live.event_date|date:"Y年n月j日" }}
+                    {{ next_live.event_date|japanese_date }}
                 </p>
 
 
@@ -141,11 +142,6 @@
             </a>
         {% endif %}
 
-        <!-- ログアウトするためのボタン -->
-        <form method="post" action="{% url 'logout' %}" class="logout-form">
-            {% csrf_token %}
-            <button type="submit">ログアウト</button>
-        </form>
     </div>
 </body>
 </html>
