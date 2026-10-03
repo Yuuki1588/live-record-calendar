@@ -21,11 +21,75 @@
 
             <!-- ライブ予定追加フォームの入力欄全体 -->
             <div class="live-form-fields">
-                {{ form.as_p }}
+                <!-- 公演日 -->
+                <p>
+                    {{ form.event_date.label_tag }}
+                    {{ form.event_date }}
+                </p>
+
+                <!-- アーティスト名 -->
+                <p>
+                    {{ form.artist.label_tag }}
+                    {{ form.artist }}
+                </p>
+
+                <!-- フェス名 -->
+                <p>
+                    {{ form.festival_name.label_tag }}
+                    {{ form.festival_name }}
+                </p>
+
+                <!-- 公演名 -->
+                <p>
+                    {{ form.event_name.label_tag }}
+                    {{ form.event_name }}
+                </p>
+
+                <!-- 対バンアーティスト名 -->
+                <p>
+                    {{ form.opponent_artists.label_tag }}
+                    {{ form.opponent_artists }}
+                </p>
+
+                <!-- 開場時間 -->
+                <p>
+                    {{ form.open_time.label_tag }}
+                    {{ form.open_time }}
+                </p>
+
+                <!-- 開演時間 -->
+                <p>
+                    {{ form.start_time.label_tag }}
+                    {{ form.start_time }}
+                </p>
+
+                <!-- 会場 -->
+                <p>
+                    {{ form.venue.label_tag }}
+                    {{ form.venue }}
+                </p>
+
+                <!-- メモ -->
+                <p>
+                    {{ form.memo.label_tag }}
+                    {{ form.memo }}
+                </p>
             </div>
 
             <!-- 入力したライブ予定を登録 -->
-            <button type="submit" class="save-button">登録</button>
+            <button type="submit" class="save-button">
+                登録
+            </button>
+
+            <!-- 予定を保存したあと、そのまま記録追加画面へ進む -->
+            <button
+                type="submit"
+                name="save_and_record"
+                value="1"
+                class="save-record-button"
+            >
+                保存してそのまま記録を追加
+            </button>
 
         </form>
 

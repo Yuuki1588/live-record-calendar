@@ -118,7 +118,7 @@
         <!-- ライブ予定をクリックするとライブ詳細画面へ移動する -->
         <a href="{% url 'live_detail' schedule.id %}" class="schedule-card">
             
-            <p>{{ schedule.event_date|date:"Y年n月j日" }}</p>
+            <p>{{ schedule.event_date|japanese_date }}</p>
             <h3>{{ schedule.artist }}</h3>
             {% if schedule.event_name %}
                 <p>{{ schedule.event_name }}</p>

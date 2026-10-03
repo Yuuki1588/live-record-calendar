@@ -184,6 +184,16 @@ def live_detail(request, schedule_id):
         live_schedule=schedule
     ).first()
 
+    # この予定にすでに記録が存在するかを保存する
+    has_record = record is not None
+
+    # URLに「?view=schedule」が付いているか確認する
+    show_schedule = request.GET.get("view") == "schedule"
+
+    # 予定詳細を表示するときは、記録があっても記録情報を表示しない
+    if show_schedule:
+        record = None
+
     # このライブ記録に登録されているセットリストを取得する
     if record:
         setlists = SetList.objects.filter(
@@ -200,6 +210,7 @@ def live_detail(request, schedule_id):
             'schedule': schedule,
             'record': record,
             "setlists": setlists,
+            'has_record': has_record,
         }
     )
 
@@ -233,8 +244,15 @@ def live_create(request):
                         artist=opponent_artist
                     )
 
-            # 全対バンの登録が終わってから戻る
-            return redirect("home")
+            # 「保存してそのまま記録を追加」が押された場合
+            if "save_and_record" in request.POST:
+                return redirect(
+                    "live_record_create",
+                    pk=schedule.pk
+                )
+
+        # 通常の「登録」が押された場合
+        return redirect("home")
 
     # 最初にライブ予定追加画面を開いた場合
     else:
@@ -439,10 +457,16 @@ def live_record_create(request, pk):
 
             # セットリストを1曲ずつ保存する
             for setlist_form in setlist_formset:
+                # 曲名が入力されている場合だけ保存する
+                if setlist_form.cleaned_data.get("song_name"):
 
-                if setlist_form.cleaned_data:
+                    
                     setlist = setlist_form.save(commit=False)
+
+                    # どのライブ記録のセットリストなのかを設定する
                     setlist.live_record = record
+
+                    # セットリストを保存する
                     setlist.save()
 
             # 保存後はライブ詳細画面へ戻る

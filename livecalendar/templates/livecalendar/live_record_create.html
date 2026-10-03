@@ -1,3 +1,4 @@
+{% load date_filters %}
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -12,8 +13,35 @@
         <!-- 画面タイトル -->
         <h1>記録追加</h1>
 
-        <!-- どのライブの記録なのか表示する -->
-        <h2>{{ schedule.event_name }}</h2>
+        <!-- 記録するライブの予定情報を表示する -->
+        <div class="schedule-info">
+
+            <!-- 開催日を「2026年9月20日（日）」の形式で表示する -->
+            <p>{{ schedule.event_date|japanese_date }}</p>
+
+            <!-- アーティスト名が登録されている場合だけ表示する -->
+            {% if schedule.artist %}
+                <h2>{{ schedule.artist }}</h2>
+            {% endif %}
+
+            <!-- 公演名・ツアー名が登録されている場合だけ表示する -->
+            {% if schedule.event_name %}
+                <p>{{ schedule.event_name }}</p>
+            {% elif schedule.festival_name %}
+                <p>{{ schedule.festival_name }}</p>
+            {% endif %}
+
+            <!-- 対バンアーティストを表示する -->
+            {% for opponent in schedule.opponentartist_set.all %}
+                <p>w/{{ opponent.artist }}</p>
+            {% endfor %}
+
+            <!-- 会場が登録されている場合だけ表示する -->
+            {% if schedule.venue %}
+                <p>📍 {{ schedule.venue }}</p>
+            {% endif %}
+
+        </div>
 
         <!-- ライブ記録を入力するフォーム -->
         <form method="POST" enctype="multipart/form-data" class="record-form">
@@ -32,7 +60,13 @@
 
                 <!-- 写真を最大3枚表示する -->
                 {% for photo_form in photo_formset %}
-                    {{ photo_form.as_p }}
+
+                    <!-- 写真のファイル選択欄だけを表示する -->
+                    {{ photo_form.photo }}
+
+                    <!-- Djangoが内部で使用するID -->
+                    {{ photo_form.id }}
+
                 {% endfor %}
             </div>
 
@@ -47,7 +81,18 @@
                 <div id="setlist-forms">
                     {% for setlist_form in setlist_formset %}
                         <div class="setlist-form">
-                            {{ setlist_form.as_p }}
+
+                            <!-- 曲名の入力欄だけを表示する -->
+                            {{ setlist_form.song_name }}
+
+                            <!-- Djangoが内部で使用するID -->
+                            {{ setlist_form.id }}
+
+                            <!-- 削除情報は画面には表示しない -->
+                            <div style="display: none;">
+                                {{ setlist_form.DELETE }}
+                            </div>
+
                         </div>
                     {% endfor %}
                 </div>

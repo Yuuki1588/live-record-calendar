@@ -36,31 +36,41 @@ class LiveScheduleForm(forms.ModelForm):
     # 対バンアーティストを入力する欄
     opponent_artists = forms.CharField(
         required=False,
-        label="対バンアーティスト",
-        help_text="例：Saucy Dog, ONE OK ROCK"
+        label="対バンアーティスト"
                     )
 
     # フォームの設定
     class Meta:
             
-            # LiveScheduleモデルに入力内容を保存
+        # LiveScheduleモデルに入力内容を保存
         model = LiveSchedule
 
-
-            # ライブ予定登録画面で入力する項目
+        # ライブ予定登録画面で入力する項目
         fields = (
+            "event_date",
             "artist",
             "festival_name",
             "event_name",
-            "event_date",
             "open_time",
             "start_time",
             "venue",
             "memo",
-            )
+        )
+
+        # 各入力項目の表示名を日本語にする
+        labels = {
+            "event_date": "公演日",
+            "artist": "アーティスト名",
+            "festival_name": "フェス名",
+            "event_name": "公演名",
+            "open_time": "開場時間",
+            "start_time": "開演時間",
+            "venue": "会場",
+            "memo": "メモ",
+        }
 
 
-            # 日付と時間を選択できるようにする
+        # 日付と時間を選択できるようにする
         widgets = {
                 "event_date": forms.DateInput(attrs={"type": "date"}),
                 "open_time": forms.TimeInput(attrs={"type": "time"}),
@@ -141,15 +151,14 @@ class SetListForm(forms.ModelForm):
         model = SetList
 
         # 入力する項目
+        # 曲順は自動で設定するため、曲名だけ入力する
         fields = (
             "song_name",
-            "song_order",
         )
 
         # セットリストの表示名を日本語にする
         labels = {
             "song_name": "曲名",
-            "song_order": "曲順",
         }
 
 

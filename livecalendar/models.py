@@ -225,8 +225,6 @@ class SetList(models.Model):
         max_length=255
     )
 
-    # セットリスト内の曲順
-    song_order = models.IntegerField()
 
         # 登録日時
     created_at = models.DateTimeField(auto_now_add=True)
