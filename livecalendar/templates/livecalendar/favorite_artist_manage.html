@@ -11,36 +11,486 @@
     <!-- お気に入りアーティスト管理画面全体 -->
     <div class="favorite-manage-container">
 
+        <!-- マイページへ戻る -->
+        <a href="{% url 'mypage' %}" class="back-button">
+            ← 
+        </a>
+
         <h1>お気に入りアーティスト管理</h1>
 
-        {% for favorite in favorite_artists %}
+        <!-- お気に入り・登録済みを切り替えるタブ -->
+        <div class="artist-tabs">
 
-            <!-- お気に入りアーティスト1件 -->
-        <div class="favorite-item">
+           <button type="button" id="favorite-tab" class="artist-tab active">
+                お気に入りアーティスト
+            </button>
 
-            <span>{{ favorite.artist }}</span>
-            <!-- お気に入りアーティストを削除する -->
-            <form
-                method="post"
-                action="{% url 'favorite_artist_delete' favorite.id %}"
-                class="delete-form"
-            >
-                {% csrf_token %}
+            <button type="button" id="registered-tab" class="artist-tab">
+                登録済アーティスト
+            </button>
 
-                <button type="submit" class="delete-button">削除</button>
-            </form>
         </div>
 
-        {% empty %}
+        <!-- お気に入りアーティスト一覧 -->
+        <div id="favorite-list">
 
-            <p class="empty-message">お気に入りアーティストはまだ登録されていません。</p>
+            {% for favorite in favorite_artists %}
 
-        {% endfor %}
+            
 
-        <a href="{% url 'favorite_artist_add' %}" class="add-button">
-            ＋ アーティストを追加
-        </a>
+            <!-- お気に入りアーティスト1件 -->
+            <div class="favorite-item">
+
+                <!-- お気に入りアーティスト名 -->
+                <span class="artist-name">
+                    {{ favorite.artist }}
+                </span>
+
+                <!-- アーティスト編集モーダルを開く -->
+                <button
+                    type="button"
+                    class="edit-button"
+                    data-artist-id="{{ favorite.artist.id }}"
+                    data-artist-name="{{ favorite.artist.artist_name }}"
+                >
+                    編集
+                </button>
+
+                <!-- ハートを押してお気に入りを解除する -->
+                <form
+                    method="post"
+                    action="{% url 'favorite_artist_toggle' favorite.artist.id %}"
+                    class="favorite-toggle-form"
+                >
+                    {% csrf_token %}
+
+                    <input type="hidden" name="tab" value="favorite">
+
+                    <input type="hidden" name="active_tab" value="favorite">
+
+                    <button type="submit" class="favorite-button">💗</button>
+                </form>
+
+                <!-- アーティストを削除する -->
+                <!-- 削除確認モーダルを開く -->
+                <button
+                    type="button"
+                    class="delete-button"
+                    data-favorite-id="{{ favorite.id }}"
+                    data-artist-name="{{ favorite.artist.artist_name }}"
+                >
+                    削除
+                </button>
+            </div>
+
+            {% empty %}
+
+                <p class="empty-message">お気に入りアーティストはまだ登録されていません。</p>
+
+            {% endfor %}
+
+            <!-- アーティスト追加モーダルを開く -->
+            <button
+                type="button"
+                id="add-artist-button"
+                class="add-button"
+            >
+                ＋ アーティストを追加
+            </button>
+
+        </div>
+
+
+        <!-- 登録済みアーティスト一覧 -->
+        <div id="registered-list" class="registered-artist-list">
+
+            <!-- 新しいアーティストを登録する -->
+            <button
+                type="button"
+                id="add-new-artist-button"
+                class="add-button"
+            >
+                ＋ アーティストを追加
+            </button>
+
+            {% for artist in artists %}
+
+                <!-- 登録済みアーティスト1件 -->
+                <div class="registered-artist-item">
+
+                    <span class="artist-name">
+                        {{ artist }}
+
+                        <!-- アーティスト編集モーダルを開く -->
+                        <button
+                            type="button"
+                            class="edit-button"
+                            data-artist-id="{{ artist.id }}"
+                            data-artist-name="{{ artist.artist_name }}"
+                        >
+                            編集
+                        </button>
+
+                        <!-- ハートを押してお気に入りを切り替える -->
+                        <form method="post"
+                            action="{% url 'favorite_artist_toggle' artist.id %}"
+                            class="favorite-toggle-form">
+
+                            {% csrf_token %}
+
+                            <!-- 登録済みアーティストタブから押したことを送る -->
+                            <input type="hidden" name="tab" value="registered">
+
+                            {% if artist.id in favorite_artist_ids %}
+                                <button type="submit" class="favorite-button">🩷</button>
+                            {% else %}
+                                <button type="submit" class="favorite-button">♡</button>
+                            {% endif %}
+
+                        </form>
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- アーティスト編集モーダル -->
+        <div id="edit-modal" class="edit-modal" style="display: none;">
+
+            <h2>アーティスト名を編集</h2>
+
+            <!-- アーティスト名を編集して保存する -->
+            <form method="post" id="edit-form">
+
+                {% csrf_token %}
+
+                <!-- 編集を開いたタブを送る -->
+                <input
+                    type="hidden"
+                    name="tab"
+                    id="edit-tab"
+                    value="favorite"
+                >
+
+                <input
+                    type="text"
+                    id="edit-artist-name"
+                    name="artist_name"
+                    required
+                >
+
+                <button type="submit">
+                    保存
+                </button>
+
+            </form>
+
+            <!-- 編集をキャンセルする -->
+            <button type="button" id="cancel-edit">
+                キャンセル
+            </button>
+
+        </div>
+
+        <!-- アーティスト削除確認モーダル -->
+        <div id="delete-modal" class="delete-modal" style="display: none;">
+
+            <h2>アーティストを削除しますか？</h2>
+
+            <!-- 削除するアーティスト名を表示する -->
+            <p id="delete-artist-name"></p>
+
+            <!-- アーティストを削除する -->
+            <form method="post" id="delete-form">
+
+                {% csrf_token %}
+
+                <button type="submit">
+                    削除
+                </button>
+
+            </form>
+
+            <!-- 削除をキャンセルする -->
+            <button type="button" id="cancel-delete">
+                キャンセル
+            </button>
+
+        </div>
+
+        <!-- アーティスト追加モーダル -->
+        <div
+            id="add-artist-modal"
+            class="add-artist-modal"
+            style="display: none;"
+        >
+            <h2>アーティストを追加</h2>
+
+            <!-- アーティストを選択して追加する -->
+            <form method="post" action="{% url 'favorite_artist_add' %}">
+
+                {% csrf_token %}
+
+                <select name="artist" required>
+
+                    <option value="">アーティストを選択</option>
+
+                    {% for artist in available_artists %}
+                        <option value="{{ artist.id }}">
+                            {{ artist.artist_name }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit">
+                    追加
+                </button>
+
+            </form>
+
+            <!-- 追加をキャンセルする -->
+            <button type="button" id="cancel-add-artist">
+                キャンセル
+            </button>
+
+        </div>
+
+        <!-- 新しいアーティストを登録するモーダル -->
+        <div id="new-artist-modal" style="display: none;">
+
+            <h2>アーティストを追加</h2>
+
+            <form
+                method="post"
+                action="{% url 'artist_create' %}"
+                id="new-artist-form"
+            >                
+            {% csrf_token %}
+
+                <input
+                    type="text"
+                    name="artist_name"
+                    placeholder="アーティスト名"
+                    required
+                >
+
+                <button type="submit">
+                    追加
+                </button>
+
+                <button type="button" id="cancel-new-artist">
+                    キャンセル
+                </button>
+            </form>
+
+        </div>
     </div>
+
+    <script>
+        // お気に入り・登録済みのタブと一覧を取得する
+        const favoriteTab = document.getElementById("favorite-tab");
+        const registeredTab = document.getElementById("registered-tab");
+        const favoriteList = document.getElementById("favorite-list");
+        const registeredList = document.getElementById("registered-list");
+
+        // URLから表示するタブを取得する
+        const params = new URLSearchParams(window.location.search);
+        const activeTab = params.get("tab");
+
+        // 登録済みアーティストから戻ってきた場合
+        if (activeTab === "registered") {
+            favoriteList.style.display = "none";
+            registeredList.style.display = "block";
+
+            registeredTab.classList.add("active");
+            favoriteTab.classList.remove("active");
+        } else {
+            // 通常はお気に入りアーティストを表示する
+            favoriteList.style.display = "block";
+            registeredList.style.display = "none";
+
+            favoriteTab.classList.add("active");
+            registeredTab.classList.remove("active");
+        }
+
+        // お気に入りアーティストを押した場合
+        favoriteTab.addEventListener("click", function () {
+            favoriteList.style.display = "block";
+            registeredList.style.display = "none";
+            favoriteTab.classList.add("active");
+            registeredTab.classList.remove("active");
+            // URLをお気に入りタブに変更する
+            window.history.replaceState(null, "", "?tab=favorite");
+            // 開いている追加画面を閉じる
+            addArtistModal.style.display = "none";
+            newArtistModal.style.display = "none";
+        });
+
+        // 登録済アーティストを押した場合
+        registeredTab.addEventListener("click", function () {
+            favoriteList.style.display = "none";
+            registeredList.style.display = "block"; 
+            registeredTab.classList.add("active");
+            favoriteTab.classList.remove("active");
+            // URLを登録済みアーティストタブに変更する
+            window.history.replaceState(null, "", "?tab=registered");
+            // 開いている追加画面を閉じる
+            addArtistModal.style.display = "none";
+            newArtistModal.style.display = "none";
+        });
+
+        // 編集ボタンをすべて取得する
+        const editButtons = document.querySelectorAll(".edit-button");
+
+        // 編集モーダルを取得する
+        const editModal = document.getElementById("edit-modal");
+
+        // アーティスト名の入力欄を取得する
+        const editArtistName = document.getElementById("edit-artist-name");
+
+        // 編集フォームを取得する
+        const editForm = document.getElementById("edit-form");
+
+        // キャンセルボタンを取得する
+        const cancelEdit = document.getElementById("cancel-edit");
+
+
+        // 編集ボタンが押された場合
+        editButtons.forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                // 押されたアーティストのIDを取得する
+                const artistId = button.dataset.artistId;
+
+                // 押されたアーティスト名を取得する
+                const artistName = button.dataset.artistName;
+
+                // 現在表示しているタブを取得する
+                const currentTab = new URLSearchParams(window.location.search).get("tab") || "favorite";
+
+                // 編集を開いたタブをフォームに入れる
+                document.getElementById("edit-tab").value = currentTab;
+
+                // 入力欄に現在のアーティスト名を表示する
+                editArtistName.value = artistName;
+
+                // 保存先を押されたアーティストのURLに変更する
+                editForm.action = `/mypage/favorites/edit/${artistId}/`;
+
+                // モーダルを表示する
+                editModal.style.display = "block";
+            });
+
+        });
+
+
+        // キャンセルが押された場合
+        cancelEdit.addEventListener("click", function () {
+
+            // モーダルを非表示にする
+            editModal.style.display = "none";
+        });
+
+        // 削除ボタンをすべて取得する
+        const deleteButtons = document.querySelectorAll(".delete-button");
+
+        // 削除確認モーダルを取得する
+        const deleteModal = document.getElementById("delete-modal");
+
+        // 削除するアーティスト名の表示場所を取得する
+        const deleteArtistName = document.getElementById("delete-artist-name");
+
+        // 削除フォームを取得する
+        const deleteForm = document.getElementById("delete-form");
+
+        // 削除キャンセルボタンを取得する
+        const cancelDelete = document.getElementById("cancel-delete");
+
+
+        // 削除ボタンが押された場合
+        deleteButtons.forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                // 削除するお気に入りのIDを取得する
+                const favoriteId = button.dataset.favoriteId;
+
+                // 削除するアーティスト名を取得する
+                const artistName = button.dataset.artistName;
+
+                // 削除確認にアーティスト名を表示する
+                deleteArtistName.textContent = `${artistName} を削除しますか？`;
+
+                // 削除先のURLを設定する
+                deleteForm.action = `/mypage/favorites/${favoriteId}/delete/`;
+
+                // 削除確認モーダルを表示する
+                deleteModal.style.display = "block";
+            });
+
+        });
+
+
+        // キャンセルが押された場合
+        cancelDelete.addEventListener("click", function () {
+
+            // 削除確認モーダルを非表示にする
+            deleteModal.style.display = "none";
+        });
+
+        // アーティスト追加ボタンを取得する
+        const addArtistButton = document.getElementById("add-artist-button");
+
+        // アーティスト追加モーダルを取得する
+        const addArtistModal = document.getElementById("add-artist-modal");
+
+        // 追加キャンセルボタンを取得する
+        const cancelAddArtist = document.getElementById("cancel-add-artist");
+
+
+        // アーティスト追加ボタンが押された場合
+        addArtistButton.addEventListener("click", function () {
+
+            // アーティスト追加モーダルを表示する
+            addArtistModal.style.display = "block";
+        });
+
+
+        // キャンセルが押された場合
+        cancelAddArtist.addEventListener("click", function () {
+
+            // アーティスト追加モーダルを非表示にする
+            addArtistModal.style.display = "none";
+        });
+
+
+        // 新しいアーティスト追加ボタンを取得する
+        const addNewArtistButton = document.getElementById("add-new-artist-button");
+
+        // 新しいアーティスト追加モーダルを取得する
+        const newArtistModal = document.getElementById("new-artist-modal");
+
+        // キャンセルボタンを取得する
+        const cancelNewArtist = document.getElementById("cancel-new-artist");
+
+        // 「＋ アーティストを追加」が押された場合
+        addNewArtistButton.addEventListener("click", function () {
+
+            // モーダルを表示する
+            newArtistModal.style.display = "block";
+        });
+
+        // キャンセルが押された場合
+        cancelNewArtist.addEventListener("click", function () {
+
+            // モーダルを非表示にする
+            newArtistModal.style.display = "none";
+        });
+    </script>
 </body>
 
 </html>

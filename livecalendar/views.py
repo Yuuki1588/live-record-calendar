@@ -973,12 +973,29 @@ def favorite_artist_manage(request):
         user=request.user
     )
 
+    # 登録済みのアーティストをすべて取得する
+    artists = Artist.objects.all().order_by("artist_name")
+
+    # お気に入り登録されているアーティストのIDを取得する
+    favorite_artist_ids = FavoriteArtist.objects.filter(
+        user=request.user
+    ).values_list("artist_id", flat=True)
+
+    # まだお気に入り登録されていないアーティストを取得する
+    available_artists = Artist.objects.exclude(
+        id__in=favorite_artist_ids
+    ).order_by("artist_name")
+
+
     # お気に入りアーティスト管理画面を表示する
     return render(
         request,
         "livecalendar/favorite_artist_manage.html",
         {
             "favorite_artists": favorite_artists,
+            "artists": artists,
+            "favorite_artist_ids": favorite_artist_ids,
+            "available_artists": available_artists,
         }
     )
 
@@ -986,9 +1003,6 @@ def favorite_artist_manage(request):
 # お気に入りアーティスト追加画面を表示する
 @login_required
 def favorite_artist_add(request):
-
-    # 登録できるアーティストを取得する
-    artists = Artist.objects.all().order_by("artist_name")
 
     # 追加ボタンが押された場合
     if request.method == "POST":
@@ -1007,15 +1021,6 @@ def favorite_artist_add(request):
 
         # 登録後、お気に入りアーティスト管理画面に戻る
         return redirect("favorite_artist_manage")
-
-    # お気に入りアーティスト追加画面を表示する
-    return render(
-        request,
-        "livecalendar/favorite_artist_add.html",
-        {
-            "artists": artists,
-        }
-    )
 
 
 # お気に入りアーティストを削除する
@@ -1036,6 +1041,37 @@ def favorite_artist_delete(request, pk):
 
         # 削除後、お気に入りアーティスト管理画面に戻る
         return redirect("favorite_artist_manage")
+
+
+# 登録済みアーティストのお気に入りを切り替える
+@login_required
+def favorite_artist_toggle(request, artist_id):
+
+    # 選択されたアーティストを取得する
+    artist = Artist.objects.get(id=artist_id)
+
+    # すでにお気に入り登録されているか確認する
+    favorite = FavoriteArtist.objects.filter(
+        user=request.user,
+        artist=artist
+    ).first()
+
+    # すでにお気に入りなら解除する
+    if favorite:
+        favorite.delete()
+
+    # お気に入りでなければ登録する
+    else:
+        FavoriteArtist.objects.create(
+            user=request.user,
+            artist=artist
+        )
+
+    # 押したタブを取得する
+    tab = request.POST.get("tab", "favorite")
+
+    # 元のタブに戻る
+    return redirect(f"/mypage/favorites/?tab={tab}")
 
 
 # メールアドレス変更画面を表示する
@@ -1161,3 +1197,46 @@ def toggle_favorite(request, pk):
 
     # ライブ詳細画面に戻る
     return redirect("live_detail", pk)
+
+
+# 登録済みアーティストを編集する
+@login_required
+def artist_edit(request, artist_id):
+
+    # 編集するアーティストを取得する
+    artist = Artist.objects.get(id=artist_id)
+
+    # 保存ボタンが押された場合
+    if request.method == "POST":
+
+        # 入力されたアーティスト名を取得する
+        artist_name = request.POST.get("artist_name")
+
+        # アーティスト名を変更して保存する
+        artist.artist_name = artist_name
+        artist.save()
+
+        # 編集を開いたタブを取得する
+        tab = request.POST.get("tab", "favorite")
+
+        # 編集を開いたタブに戻る
+        return redirect(f"/mypage/favorites/?tab={tab}")
+
+
+# 新しいアーティストを登録する
+@login_required
+def artist_create(request):
+
+    # 追加ボタンが押された場合
+    if request.method == "POST":
+
+        # 入力されたアーティスト名を取得する
+        artist_name = request.POST.get("artist_name")
+
+        # 新しいアーティストを登録する
+        Artist.objects.create(
+            artist_name=artist_name
+        )
+
+    # 登録済みアーティストタブに戻る
+    return redirect("/mypage/favorites/?tab=registered")

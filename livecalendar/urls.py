@@ -31,6 +31,8 @@ urlpatterns = [
     path("live/<int:pk>/record/delete/", views.live_record_delete, name="live_record_delete"),
     # ライブ記録を編集する画面
     path("live/<int:pk>/record/edit/",views.live_record_edit,name="live_record_edit"),
+    # ライブ記録のお気に入りをON/OFFするURL
+    path("live/<int:pk>/favorite/",views.toggle_favorite,name="toggle_favorite",),
     # ライブ記録の履歴画面
     path("history/", views.history, name="history"),
     # 統計画面
@@ -45,6 +47,12 @@ urlpatterns = [
     path("mypage/favorites/add/",views.favorite_artist_add,name="favorite_artist_add"),
     # お気に入りアーティスト削除
     path("mypage/favorites/<int:pk>/delete/",views.favorite_artist_delete,name="favorite_artist_delete"),
+    # 登録済みアーティストを編集する
+    path("mypage/favorites/edit/<int:artist_id>/",views.artist_edit,name="artist_edit"),
+    # 登録済みアーティストのお気に入りを切り替える
+    path("mypage/favorites/toggle/<int:artist_id>/",views.favorite_artist_toggle,name="favorite_artist_toggle"),
+    # 新しいアーティストを登録する
+    path("mypage/favorites/create/",views.artist_create,name="artist_create"),
     # メールアドレス変更
     path("mypage/email/change/",views.email_change,name="email_change"),
     # パスワード変更
@@ -53,6 +61,4 @@ urlpatterns = [
     path("logout/",views.logout_view,name="logout"),
     # ログアウト確認
     path("logout/confirm/",views.logout_confirm,name="logout_confirm"),
-    # ライブ記録のお気に入りをON/OFFするURL
-    path("live/<int:pk>/favorite/",views.toggle_favorite,name="toggle_favorite",),
 ]
