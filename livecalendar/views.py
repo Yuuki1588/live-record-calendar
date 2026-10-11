@@ -22,6 +22,8 @@ from django.db.models import Count
 # パスワード変更後のログイン維持とログアウト処理を使う
 from django.contrib.auth import update_session_auth_hash, logout
 
+from django.contrib import messages
+
 
 # ホーム画面を表示する
 @login_required
@@ -1237,6 +1239,39 @@ def artist_create(request):
         Artist.objects.create(
             artist_name=artist_name
         )
+
+    # 登録済みアーティストタブに戻る
+    return redirect("/mypage/favorites/?tab=registered")
+
+
+
+# 登録済みアーティストを削除する
+@login_required
+def artist_delete(request, artist_id):
+
+    # 指定されたアーティストを取得する
+    artist = get_object_or_404(Artist, id=artist_id)
+
+    # POSTで送信された場合のみ削除処理を行う
+    if request.method == "POST":
+
+        # メインアーティストまたは対バンで使用されているか確認する
+        if (
+            LiveSchedule.objects.filter(artist=artist).exists()
+            or OpponentArtist.objects.filter(artist=artist).exists()
+        ):
+            messages.error(
+                request,
+                "ライブ予定または対バンで使用されているため削除できません。"
+            )
+
+        # 使用されていない場合は削除する
+        else:
+            artist.delete()
+            messages.success(
+                request,
+                "アーティストを削除しました。"
+            )
 
     # 登録済みアーティストタブに戻る
     return redirect("/mypage/favorites/?tab=registered")

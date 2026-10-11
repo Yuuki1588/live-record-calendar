@@ -148,6 +148,17 @@
                             {% endif %}
 
                         </form>
+
+                        <!-- 登録済みアーティストの削除確認を開く -->
+                        <button
+                            type="button"
+                            class="registered-delete-button"
+                            data-artist-id="{{ artist.id }}"
+                            data-artist-name="{{ artist.artist_name }}"
+                        >
+                            削除
+                        </button>
+
                     </span>
 
                 </div>
@@ -218,6 +229,34 @@
                 キャンセル
             </button>
 
+        </div>
+
+        <!-- 登録済みアーティストの削除確認モーダル -->
+        <div
+            id="registered-delete-modal"
+            class="delete-modal"
+            style="display: none;"
+        >
+            <!-- 削除するアーティスト名を表示 -->
+            <p id="registered-delete-message"></p>
+
+            <!-- 削除を確定するフォーム -->
+            <form method="post" id="registered-delete-form">
+                {% csrf_token %}
+
+                <button type="submit" class="confirm-button">
+                    はい
+                </button>
+            </form>
+
+            <!-- 削除をキャンセルする -->
+            <button
+                type="button"
+                id="cancel-registered-delete"
+                class="cancel-button"
+            >
+                いいえ
+            </button>
         </div>
 
         <!-- アーティスト追加モーダル -->
@@ -489,6 +528,56 @@
 
             // モーダルを非表示にする
             newArtistModal.style.display = "none";
+        });
+
+
+        // 登録済みアーティストの削除ボタンをすべて取得する
+        const registeredDeleteButtons = document.querySelectorAll(
+            ".registered-delete-button"
+        );
+
+        // 削除確認モーダルを取得する
+        const registeredDeleteModal = document.getElementById(
+            "registered-delete-modal"
+        );
+
+        // 削除確認メッセージを取得する
+        const registeredDeleteMessage = document.getElementById(
+            "registered-delete-message"
+        );
+
+        // 削除フォームを取得する
+        const registeredDeleteForm = document.getElementById(
+            "registered-delete-form"
+        );
+
+        // キャンセルボタンを取得する
+        const cancelRegisteredDelete = document.getElementById(
+            "cancel-registered-delete"
+        );
+
+        // 各アーティストの削除ボタンに処理を設定する
+        registeredDeleteButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+
+                // 削除対象のアーティスト名を取得する
+                const artistName = button.dataset.artistName;
+
+                // 確認メッセージを表示する
+                registeredDeleteMessage.textContent =
+                    artistName + "を削除しますか？";
+
+                // 削除フォームの送信先は後で設定する
+                registeredDeleteForm.removeAttribute("action");
+
+                // 確認モーダルを表示する
+                registeredDeleteModal.style.display = "block";
+            });
+        });
+
+        // 「いいえ」が押された場合はモーダルを閉じる
+        cancelRegisteredDelete.addEventListener("click", function () {
+            registeredDeleteModal.style.display = "none";
         });
     </script>
 </body>
