@@ -235,3 +235,25 @@ class SetList(models.Model):
     # 管理画面などでセットリストの曲名を表示する
     def __str__(self):
         return f"{self.song_order}. {self.song_name}"
+
+
+
+    # ユーザーのプロフィール情報を保存するモデル
+class Profile(models.Model):
+
+    # Djangoのユーザーとプロフィールを1対1で紐づける
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    # プロフィール画像を保存する
+    profile_image = models.ImageField(
+        upload_to="profile_images/",
+        blank=True,
+        null=True
+    )
+
+    # 管理画面などでユーザー名を表示する
+    def __str__(self):
+        return self.user.username

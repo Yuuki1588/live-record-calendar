@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django import forms
 
 # ライブ予定・ライブ記録・記録写真.セットリストのモデルを読み込む
-from .models import LiveSchedule, LiveRecord, RecordPhoto, SetList
+from .models import LiveSchedule, LiveRecord, RecordPhoto, SetList, Profile
 
 from django.forms import modelformset_factory
 
@@ -169,3 +169,16 @@ SetListFormSet = modelformset_factory(
     extra=3,
     can_delete=True
 )
+
+
+# プロフィール画像を登録・変更するためのフォーム
+class ProfileForm(forms.ModelForm):
+
+    # フォームの設定
+    class Meta:
+
+        # Profileモデルを使用する
+        model = Profile
+
+        # プロフィール画像だけを編集できるようにする
+        fields = ("profile_image",)

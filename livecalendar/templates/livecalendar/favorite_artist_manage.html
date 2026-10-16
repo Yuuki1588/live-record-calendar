@@ -18,6 +18,25 @@
 
         <h1>お気に入りアーティスト管理</h1>
 
+        <!-- Djangoから送られたメッセージを表示する -->
+        {% if messages %}
+
+            <!-- メッセージ一覧 -->
+            <div class="message-container">
+
+                {% for message in messages %}
+
+                    <!-- 成功・エラーの種類に応じたクラスを付ける -->
+                    <p class="message {{ message.tags }}">
+                        {{ message }}
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
         <!-- お気に入り・登録済みを切り替えるタブ -->
         <div class="artist-tabs">
 
@@ -567,8 +586,12 @@
                 registeredDeleteMessage.textContent =
                     artistName + "を削除しますか？";
 
-                // 削除フォームの送信先は後で設定する
-                registeredDeleteForm.removeAttribute("action");
+                // 削除対象のアーティストIDを取得する
+                const artistId = button.dataset.artistId;
+
+                // 削除フォームの送信先を設定する
+                registeredDeleteForm.action =
+                    `/mypage/favorites/artist/${artistId}/delete/`;
 
                 // 確認モーダルを表示する
                 registeredDeleteModal.style.display = "block";

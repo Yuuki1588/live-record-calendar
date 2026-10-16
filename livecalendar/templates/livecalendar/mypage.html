@@ -14,6 +14,25 @@
         <!-- プロフィール情報 -->
         <div class="profile-section">
 
+            <!-- プロフィール画像を表示する -->
+            <div class="profile-image">
+
+                {% if profile.profile_image %}
+                    <img
+                        src="{{ profile.profile_image.url }}"
+                        alt="プロフィール画像"
+                        class="profile-avatar"
+                        width="120"
+                        height="120"
+                    >
+                {% else %}
+                    <!-- プロフィール画像が未登録の場合 -->
+                    <div class="default-avatar">
+                        👤
+                    </div>
+                {% endif %}
+            </div>
+
 
             <!-- ログイン中のユーザー名を表示する -->
             <h2>{{ request.user.username }}</h2>

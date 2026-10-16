@@ -8,10 +8,10 @@ from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 
 # 新規登録・ライブ予定・ライブ記録・写真・セットリストのフォームを使えるようにする
-from .forms import SignupForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm, RecordPhotoFormSet, SetListForm, SetListFormSet
+from .forms import SignupForm, LiveScheduleForm, LiveRecordForm, RecordPhotoForm, RecordPhotoFormSet, SetListForm, SetListFormSet,ProfileForm
 
 # ライブ予定・アーティスト・対バンアーティスト・ライブ記録のデータを使えるようにする
-from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto, OpponentArtist,LiveVenue,FavoriteArtist
+from .models import Artist, LiveSchedule, LiveRecord, SetList, RecordPhoto, OpponentArtist,LiveVenue,FavoriteArtist,Profile
 
 # ログインしているユーザーだけ画面を見られるようにする
 from django.contrib.auth.decorators import login_required
@@ -926,12 +926,22 @@ def mypage(request):
         user=request.user
     )
 
+    # ログイン中のユーザーのプロフィールを取得する
+    # プロフィールがまだなければ新しく作成する
+    profile, created = Profile.objects.get_or_create(
+        user=request.user
+    )
+
     # マイページを表示する
     return render(
         request,
         "livecalendar/mypage.html",
         {
+            # お気に入りアーティストをHTMLに渡す
             "favorite_artists": favorite_artists,
+
+            # プロフィール情報をHTMLに渡す
+            "profile": profile,
         }
     )
 
@@ -943,25 +953,54 @@ def profile_edit(request):
     # ログイン中のユーザー情報を取得する
     user = request.user
 
+    # ログイン中のユーザーのプロフィールを取得する
+    # まだプロフィールがなければ新しく作成する
+    profile, created = Profile.objects.get_or_create(
+        user=user
+    )
+
     # 保存ボタンが押された場合
     if request.method == "POST":
 
-        # 入力されたユーザー名を取得する
-        username = request.POST.get("username")
+        # 送信された画像をプロフィールに紐づける
+        profile_form = ProfileForm(
+            request.POST,
+            request.FILES,
+            instance=profile
+        )
 
-        # ユーザー名を変更して保存する
-        user.username = username
-        user.save()
+        # 画像フォームの入力内容が正しいか確認する
+        if profile_form.is_valid():
 
-        # 保存後、マイページに戻る
-        return redirect("mypage")
+            # プロフィール画像を保存する
+            profile_form.save()
+
+            # 入力されたユーザー名を取得する
+            username = request.POST.get("username")
+
+            # ユーザー名を変更して保存する
+            user.username = username
+            user.save()
+
+            # 保存後、マイページに戻る
+            return redirect("mypage")
+
+    # GETでプロフィール編集画面を開いた場合
+    else:
+
+        # 現在のプロフィール画像をフォームに表示する
+        profile_form = ProfileForm(instance=profile)
 
     # プロフィール編集画面を表示する
     return render(
         request,
         "livecalendar/profile_edit.html",
         {
+            # ログイン中のユーザー情報を渡す
             "user": user,
+
+            # プロフィール画像のフォームを渡す
+            "profile_form": profile_form,
         }
     )
 
@@ -1255,14 +1294,16 @@ def artist_delete(request, artist_id):
     # POSTで送信された場合のみ削除処理を行う
     if request.method == "POST":
 
-        # メインアーティストまたは対バンで使用されているか確認する
+        # ライブ予定・対バン・お気に入りで使用されているか確認する
         if (
             LiveSchedule.objects.filter(artist=artist).exists()
             or OpponentArtist.objects.filter(artist=artist).exists()
+            or FavoriteArtist.objects.filter(artist=artist).exists()
         ):
+            # 使用中のアーティストは削除しない
             messages.error(
                 request,
-                "ライブ予定または対バンで使用されているため削除できません。"
+                "ライブ予定・対バン・お気に入りで使用されているため削除できません。"
             )
 
         # 使用されていない場合は削除する

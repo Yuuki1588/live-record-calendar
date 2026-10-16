@@ -53,6 +53,8 @@ urlpatterns = [
     path("mypage/favorites/toggle/<int:artist_id>/",views.favorite_artist_toggle,name="favorite_artist_toggle"),
     # 新しいアーティストを登録する
     path("mypage/favorites/create/",views.artist_create,name="artist_create"),
+    # 登録済みアーティストを削除する
+    path("mypage/favorites/artist/<int:artist_id>/delete/", views.artist_delete, name="artist_delete"),
     # メールアドレス変更
     path("mypage/email/change/",views.email_change,name="email_change"),
     # パスワード変更

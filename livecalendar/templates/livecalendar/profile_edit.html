@@ -9,14 +9,22 @@
 <body>
     <!-- プロフィール編集画面全体 -->
     <div class="profile-edit-container">
+
+        <div class="profile-edit-container">
+
+        <!-- マイページに戻る -->
+        <a href="{% url 'mypage' %}" class="back-button">
+            ←
+        </a>
+
         <h1>プロフィール編集</h1>
 
         
-       <!-- プロフィール編集フォーム -->
-        <form method="post" class="profile-edit-form">
+        <!-- プロフィール編集フォーム（画像の送信にも対応） -->
+        <form method="post" enctype="multipart/form-data" class="profile-edit-form">
             {% csrf_token %}
 
-            <!-- ユーザー名入力欄 -->
+        <!-- ユーザー名入力欄 -->
         <div class="form-group">
 
             <label for="username">ユーザー名</label>
@@ -29,6 +37,23 @@
                 required
             >
         </div>
+
+        <!-- プロフィール画像の入力欄 -->
+        <div class="form-group">
+
+            <!-- プロフィール画像の見出し -->
+            <label for="{{ profile_form.profile_image.id_for_label }}">
+                プロフィール画像
+            </label>
+
+            <!-- 画像を選択するフォーム -->
+            {{ profile_form.profile_image }}
+
+            <!-- 画像に問題があった場合のエラー -->
+            {{ profile_form.profile_image.errors }}
+
+        </div>
+
         <button type="submit" class="save-button">保存</button>
         </form>
     </div>
