@@ -46,8 +46,40 @@
                 プロフィール画像
             </label>
 
-            <!-- 画像を選択するフォーム -->
-            {{ profile_form.profile_image }}
+            <!-- プロフィール画像を変更するボタン -->
+            <button
+                type="button"
+                id="change-image-button"
+                class="change-image-button"
+            >
+                画像を変更
+            </button>
+
+            <!-- 画像選択の機能は残して、標準の入力欄だけ非表示にする -->
+            <div style="display: none;">
+                {{ profile_form.profile_image }}
+            </div>
+
+            <!-- 現在のプロフィール画像または選択した画像を表示する -->
+            <img
+                id="profile-image-preview"
+
+                {% if profile_form.instance.profile_image %}
+                    src="{{ profile_form.instance.profile_image.url }}"
+                {% else %}
+                    src=""
+                {% endif %}
+
+                alt="プロフィール画像"
+                width="100"
+                height="100"
+
+                {% if not profile_form.instance.profile_image %}
+                    style="display: none; object-fit: cover;"
+                {% else %}
+                    style="display: block; object-fit: cover;"
+                {% endif %}
+            >
 
             <!-- 画像に問題があった場合のエラー -->
             {{ profile_form.profile_image.errors }}
@@ -56,7 +88,140 @@
 
         <button type="submit" class="save-button">保存</button>
         </form>
+
+        <!-- プロフィール画像変更用のポップアップ -->
+        <div
+            id="image-modal"
+            class="image-modal"
+            style="display: none;"
+        >
+            <!-- ポップアップの内容 -->
+            <div class="image-modal-content">
+
+                <h2>画像をアップロード</h2>
+
+                <!-- 画像を選択するボタン -->
+                <button
+                    type="button"
+                    id="upload-image-button"
+                    class="upload-button"
+                >
+                    アップロード
+                </button>
+
+        <!-- 登録済みの画像がある場合だけ削除ボタンを表示する -->
+        {% if profile.profile_image %}
+
+            <!-- プロフィール画像だけを削除するフォーム -->
+            <form
+                method="post"
+                action="{% url 'profile_edit' %}"
+                id="delete-image-form"
+            >
+                {% csrf_token %}
+
+                <!-- Djangoに画像削除の操作だと伝える -->
+                <input type="hidden" name="delete_image" value="1">
+
+                <!-- 削除確認を開くボタン -->
+                <button
+                    type="button"
+                    id="delete-image-button"
+                    class="delete-image-button"
+                >
+                    画像を削除
+                </button>
+            </form>
+
+        {% endif %}
+                <!-- ポップアップを閉じるボタン -->
+                <button
+                    type="button"
+                    id="close-image-modal"
+                    class="close-button"
+                >
+                    ×
+                </button>
+
+            </div>
+        </div>
     </div>
+
+    <!-- プロフィール画像変更ポップアップの操作 -->
+    <script>
+        // 「画像を変更」ボタンを取得する
+        const changeImageButton = document.getElementById("change-image-button");
+
+        // ポップアップ全体を取得する
+        const imageModal = document.getElementById("image-modal");
+
+        // 「×」ボタンを取得する
+        const closeImageModal = document.getElementById("close-image-modal");
+
+        // 「画像を変更」を押したらポップアップを表示する
+        changeImageButton.addEventListener("click", function () {
+            imageModal.style.display = "block";
+        });
+
+
+        // 「×」を押したらポップアップを閉じる
+        closeImageModal.addEventListener("click", function () {
+            imageModal.style.display = "none";
+        });
+
+        // 「アップロード」ボタンを取得する
+        const uploadImageButton = document.getElementById("upload-image-button");
+
+        // プロフィール画像のファイル入力欄を取得する
+        const profileImageInput = document.getElementById("id_profile_image");
+
+        // 「アップロード」を押したら画像選択画面を開く
+        uploadImageButton.addEventListener("click", function () {
+            profileImageInput.click();
+        });
+
+        // プレビュー画像を取得する
+        const profileImagePreview = document.getElementById("profile-image-preview");
+
+        // 画像が選択された場合
+        profileImageInput.addEventListener("change", function () {
+
+            // 画像が選択されているか確認する
+            if (profileImageInput.files.length > 0) {
+
+                // 選択された画像を取得する
+                const file = profileImageInput.files[0];
+
+                // 画像のプレビュー用URLを作成する
+                const imageUrl = URL.createObjectURL(file);
+
+                // プレビュー画像に設定する
+                profileImagePreview.src = imageUrl;
+
+                // プレビュー画像を表示する
+                profileImagePreview.style.display = "block";
+
+                // アップロード画面を閉じる
+                imageModal.style.display = "none";
+            }
+        });
+        const deleteImageButton = document.getElementById("delete-image-button");
+
+        // 画像削除用のフォームを取得する
+        const deleteImageForm = document.getElementById("delete-image-form");
+
+        // 「画像を削除」が押された場合
+        deleteImageButton.addEventListener("click", function () {
+
+            // 本当に削除するか確認する
+            const confirmed = confirm("プロフィール画像を削除しますか？");
+
+            // OKが押された場合だけ削除フォームを送信する
+            if (confirmed) {
+                deleteImageForm.submit();
+            }
+        });
+    </script>
 </body>
 
 </html>

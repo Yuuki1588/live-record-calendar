@@ -962,6 +962,18 @@ def profile_edit(request):
     # 保存ボタンが押された場合
     if request.method == "POST":
 
+        # 「画像を削除」が押された場合
+        if request.POST.get("delete_image") == "1":
+
+            # 登録済みのプロフィール画像がある場合
+            if profile.profile_image:
+
+                # 画像ファイルとデータベースの画像情報を削除する
+                profile.profile_image.delete(save=True)
+
+            # 削除後、プロフィール編集画面に戻る
+            return redirect("profile_edit")
+
         # 送信された画像をプロフィールに紐づける
         profile_form = ProfileForm(
             request.POST,
@@ -1001,6 +1013,7 @@ def profile_edit(request):
 
             # プロフィール画像のフォームを渡す
             "profile_form": profile_form,
+            "profile": profile,
         }
     )
 
