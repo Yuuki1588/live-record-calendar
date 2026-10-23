@@ -1,5 +1,5 @@
-# Djangoのユーザー新規登録フォームを使えるようにする
-from django.contrib.auth.forms import UserCreationForm
+# 新規登録フォームとログインフォームを使えるようにする
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 # Djangoのユーザー情報を扱うUserモデルを使えるようにする
 from django.contrib.auth.models import User
@@ -16,8 +16,48 @@ from django.forms import modelformset_factory
 from django.forms.widgets import ClearableFileInput
 
 
+
+# メールアドレスでログインするためのフォーム
+class EmailLoginForm(AuthenticationForm):
+
+    # ログイン画面の入力欄をメールアドレスにする
+    username = forms.EmailField(
+        label="メールアドレス",
+        widget=forms.EmailInput(
+            attrs={"autocomplete": "email"}
+        )
+    )
+
+    # 入力されたメールアドレスからユーザーを探す
+    def clean(self):
+        email = self.cleaned_data.get("username")
+
+        if email:
+            # メールアドレスが一致するユーザーを取得する
+            users = User.objects.filter(email__iexact=email)
+
+            # 同じメールアドレスのユーザーが1人だけの場合
+            if users.count() == 1:
+                self.cleaned_data["username"] = users.first().username
+
+        # Django標準のパスワード認証を実行する
+        return super().clean()
+
+
 # 新規登録フォームを作成
 class SignupForm(UserCreationForm):
+
+    # パスワードの項目名を日本語にする
+    password1 = forms.CharField(
+        label="パスワード",
+        widget=forms.PasswordInput
+    )
+
+    # パスワード確認用の項目名を日本語にする
+    password2 = forms.CharField(
+        label="パスワード（確認用）",
+        widget=forms.PasswordInput
+    )
 
     # フォームの設定
     class Meta:
@@ -27,6 +67,32 @@ class SignupForm(UserCreationForm):
 
         # 新規登録画面で使用する入力項目
         fields = ("username", "email", "password1", "password2")
+
+        # 新規登録画面の項目名を日本語にする
+        labels = {
+            "username": "ユーザー名",
+            "email": "メールアドレス",
+        }
+
+    # メールアドレスの重複をチェックする
+    def clean_email(self):
+
+        # 入力されたメールアドレスを取得する
+        email = self.cleaned_data.get("email")
+
+        # メールアドレスの前後の空白を削除する
+        email = email.strip()
+
+        # 同じメールアドレスが登録されているか確認する
+        if User.objects.filter(email__iexact=email).exists():
+
+            # すでに登録されている場合はエラーにする
+            raise forms.ValidationError(
+                "このメールアドレスはすでに登録されています。"
+            )
+
+        # 問題がなければメールアドレスを返す
+        return email
 
 
  # ライブ予定を登録するフォームを作成

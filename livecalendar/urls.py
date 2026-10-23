@@ -1,15 +1,84 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+# メールアドレス用のログインフォームを読み込む
+from .forms import EmailLoginForm
+
 
 urlpatterns = [
+    # メールアドレスでログインする画面
     path(
         'login/',
         auth_views.LoginView.as_view(
-            template_name='livecalendar/login.html'
+            # ログイン画面のHTML
+            template_name='livecalendar/login.html',
+
+            # メールアドレス用のログインフォーム
+            authentication_form=EmailLoginForm
         ),
         name='login'
     ),
+    # パスワード再設定用のメールアドレス入力画面
+    path(
+        'password-reset/',
+        auth_views.PasswordResetView.as_view(
+            # メールアドレス入力画面
+            template_name='livecalendar/password_reset.html',
+
+            # メール送信後に移動する画面
+            success_url='/password-reset/done/'
+        ),
+        name='password_reset'
+    ),
+    
+    # パスワード再設定用のメールアドレス入力画面
+    path(
+        'password-reset/',
+        auth_views.PasswordResetView.as_view(
+            # メールアドレス入力画面
+            template_name='livecalendar/password_reset.html',
+
+            # 再設定メールの本文
+            email_template_name='livecalendar/password_reset_email.html',
+
+            # メール送信後に移動する画面
+            success_url='/password-reset/done/'
+        ),
+        name='password_reset'
+    ),
+
+    # パスワード再設定メールの送信完了画面
+    path(
+        'password-reset/done/',
+        auth_views.PasswordResetDoneView.as_view(
+            template_name='livecalendar/password_reset_done.html'
+        ),
+        name='password_reset_done'
+    ),
+    
+    # メール内のリンクから新しいパスワードを設定する画面
+    path(
+        'password-reset/confirm/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(
+            # 新しいパスワードを入力するHTML
+            template_name='livecalendar/password_reset_confirm.html',
+
+            # パスワード変更後の移動先
+            success_url='/password-reset/complete/'
+        ),
+        name='password_reset_confirm'
+    ),
+
+    # パスワード再設定が完了した後の画面
+    path(
+        'password-reset/complete/',
+        auth_views.PasswordResetCompleteView.as_view(
+            # パスワード再設定完了画面のHTML
+            template_name='livecalendar/password_reset_complete.html'
+        ),
+        name='password_reset_complete'
+    ),
+
     #ホーム画面を表示するためのURL
     path('home/', views.index, name='home'),
 

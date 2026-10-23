@@ -14,9 +14,9 @@
 
         <!-- ログインフォームの入力欄全体 -->
         <div class="login-form-fields">
-           <!-- ユーザー名の入力欄 -->
+           <!-- メールアドレスの入力欄 -->
             <p>
-                <label for="{{ form.username.id_for_label }}">ユーザー名</label>
+                <label for="{{ form.username.id_for_label }}">メールアドレス</label> 
                 {{ form.username }}
             </p>
 
@@ -34,6 +34,13 @@
         <p class="signup-link">
         アカウントをお持ちでない方は
         <a href="{% url 'signup' %}">新規登録はこちら</a>
+        </p>
+
+        <!-- パスワードを忘れた場合のリンク -->
+        <p class="password-reset-link">
+            <a href="{% url 'password_reset' %}">
+                パスワードを忘れた方はこちら
+            </a>
         </p>
     </div>
 </body>

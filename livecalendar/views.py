@@ -154,7 +154,7 @@ def signup(request):
 
     # 登録ボタンが押された場合
     if request.method == "POST":
-        form = SignUpForm(request.POST)
+        form = SignupForm(request.POST)
 
         # 入力内容に問題がなければユーザーを登録する
         if form.is_valid():
@@ -165,7 +165,7 @@ def signup(request):
 
     # 最初に新規登録画面を開いた場合
     else:
-        form = SignUpForm()
+        form = SignupForm()
 
     # signup.htmlに新規登録フォームを渡して表示する
     return render(request, "livecalendar/signup.html", {"form": form})
