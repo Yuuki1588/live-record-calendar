@@ -6,3 +6,6 @@ db.sqlite3
 # アップロードされたライブ記録写真
 media/
 record_photos/
+
+# 開発用に保存したパスワード再設定メールをGitの管理対象から外す
+sent_emails/

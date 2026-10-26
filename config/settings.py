@@ -131,5 +131,8 @@ LOGIN_URL = '/login/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# 開発中はメールの内容をターミナルに表示する
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# 開発中のメールをファイルに保存する
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+
+# メールの保存先を指定する
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"

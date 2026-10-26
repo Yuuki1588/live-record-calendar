@@ -18,18 +18,6 @@ urlpatterns = [
         ),
         name='login'
     ),
-    # パスワード再設定用のメールアドレス入力画面
-    path(
-        'password-reset/',
-        auth_views.PasswordResetView.as_view(
-            # メールアドレス入力画面
-            template_name='livecalendar/password_reset.html',
-
-            # メール送信後に移動する画面
-            success_url='/password-reset/done/'
-        ),
-        name='password_reset'
-    ),
     
     # パスワード再設定用のメールアドレス入力画面
     path(
