@@ -1,0 +1,178 @@
+@charset "UTF-8";
+
+/* ページ全体の基本設定 */
+body {
+    /* 画面の余白をなくす */
+    margin: 0;
+
+    /* 背景を薄いグレーにする */
+    background-color: #f5f5f5;
+
+    /* 文字の種類を設定する */
+    font-family: Arial, sans-serif;
+
+    /* 文字色を濃いグレーにする */
+    color: #333333;
+}
+
+/* カレンダー全体のデザイン */
+.calendar-container {
+    /* カレンダーの最大横幅 */
+    max-width: 900px;
+
+    /* 左右中央に配置する */
+    margin: 40px auto;
+
+    /* 内側に余白をつける */
+    padding: 30px;
+
+    /* 背景を白にする */
+    background-color: #ffffff;
+
+    /* 角を丸くする */
+    border-radius: 12px;
+
+    /* 周囲に薄い影をつける */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* カレンダーのタイトル */
+.calendar-container h1 {
+    /* 文字を中央に配置する */
+    text-align: center;
+
+    /* 文字の大きさ */
+    font-size: 28px;
+
+    /* タイトルの下に余白をつける */
+    margin-bottom: 30px;
+}
+
+
+/* カレンダーの表全体 */
+.calendar-table {
+    /* カレンダーを横幅いっぱいに広げる */
+    width: 100%;
+
+    /* セルの境界線を重ねる */
+    border-collapse: collapse;
+
+    /* 表のレイアウトを均等にする */
+    table-layout: fixed;
+}
+
+/* 曜日と日付のマス */
+.calendar-table th,
+.calendar-table td {
+    /* 文字を中央に配置する */
+    text-align: center;
+
+    /* マスの内側に余白をつける */
+    padding: 12px 4px;
+
+    /* 上下方向の位置を揃える */
+    vertical-align: top;
+}
+
+
+/* カレンダーの日付のマス */
+.calendar-day {
+    /* マスの高さを設定する */
+    height: 75px;
+
+    /* 日付を上側に配置する */
+    vertical-align: top;
+}
+
+/* 日付の数字 */
+.calendar-date {
+    /* リンクの下線を消す */
+    text-decoration: none;
+
+    /* 文字色を設定する */
+    color: #333333;
+
+    /* 文字を少し太くする */
+    font-weight: bold;
+
+    /* 数字の大きさを設定する */
+    font-size: 16px;
+}
+
+/* ライブ予定がある日のLIVE表示 */
+.live-marker {
+    /* LIVEをオレンジ色にする */
+    color: #ff8c00;
+
+    /* 文字を小さくする */
+    font-size: 11px;
+
+    /* 文字を太くする */
+    font-weight: bold;
+
+    /* 日付との間に余白をつける */
+    margin-top: 5px;
+}
+
+
+/* カレンダーの日付のマス */
+.calendar-day {
+    /* マスの高さを設定する */
+    height: 75px;
+
+    /* 日付を上側に配置する */
+    vertical-align: top;
+}
+
+/* 日付の数字 */
+.calendar-date {
+    /* リンクの下線を消す */
+    text-decoration: none;
+
+    /* 文字色を設定する */
+    color: #333333;
+
+    /* 文字を少し太くする */
+    font-weight: bold;
+
+    /* 数字の大きさを設定する */
+    font-size: 16px;
+}
+
+/* ライブ予定がある日のLIVE表示 */
+.live-marker {
+    /* LIVEをオレンジ色にする */
+    color: #ff8c00;
+
+    /* 文字を小さくする */
+    font-size: 11px;
+
+    /* 文字を太くする */
+    font-weight: bold;
+
+    /* 日付との間に余白をつける */
+    margin-top: 5px;
+}
+
+
+
+/* ライブ予定がある日付の丸枠 */
+.calendar-date.has-live {
+    /* オレンジ色の丸枠をつける */
+    border: 2px solid #ff8c00;
+
+    /* 丸い形にする */
+    border-radius: 50%;
+
+    /* 数字を中央に配置する */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 丸枠の大きさを揃える */
+    width: 34px;
+    height: 34px;
+
+    /* 枠を含めて大きさを計算する */
+    box-sizing: border-box;
+}

@@ -1,0 +1,23 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <!-- 日本語を正しく表示する -->
+    <meta charset="UTF-8">
+
+    <!-- スマホの画面幅に合わせる -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ページのタイトル -->
+    <title>{% block title %}ライブ記録カレンダー{% endblock %}</title>
+
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" href="{% static 'livecalendar/css/style.css' %}">
+</head>
+<body>
+    <!-- 各ページ固有の内容を表示する -->
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

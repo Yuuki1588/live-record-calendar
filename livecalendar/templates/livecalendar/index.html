@@ -1,11 +1,11 @@
+
+{% extends 'livecalendar/base.html' %}
 {% load date_filters %}
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>ライブ記録カレンダー</title>
-</head>
-<body>
+
+{% block title %}ライブ記録カレンダー{% endblock %}
+
+{% block content %}
+
 
     <!-- カレンダー画面全体 -->
     <div class="calendar-container">
@@ -44,20 +44,21 @@
 
                 {% if day_data.day != 0 %}
 
-                <!-- 日付をクリックすると、その日を選択できる -->
+                
+                <!-- 日付をクリックできるようにする -->
                 <a href="?year={{ year }}&month={{ month }}&day={{ day_data.day }}"
-                    class="calendar-date">
+                class="calendar-date{% if day_data.schedules %} has-live{% endif %}">
                     {{ day_data.day }}
                 </a>
 
-                <!-- この日にライブ予定がある場合だけ表示する -->
+                <!-- ライブ予定がある日だけLIVEを表示する -->
                 {% if day_data.schedules %}
                     <div class="live-marker">
                         LIVE
                     </div>
                 {% endif %}
 
-                {% endif %}
+            {% endif %}
 
             </td>
             {% endfor %}
@@ -143,5 +144,4 @@
         {% endif %}
 
     </div>
-</body>
-</html>
+{% endblock %}
